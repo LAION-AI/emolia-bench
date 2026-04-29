@@ -1,0 +1,5 @@
+file_name,queried_emotion,task_type,ratings_observed,usernames,source_emotions
+EN_B00013_S03009_W000013_speaker_reference.mp3,Infatuation,affirmative,1,user_2,Infatuation
+EN_wlt0Ae-TUG8_W000016_speaker_reference.mp3,Longing,penultimate,1,user_0,Longing
+EN_wlt0Ae-TUG8_W000016_speaker_reference.mp3,Longing,affirmative,2,user_1|user_2,Longing
+EN_B00013_S03009_W000013_speaker_reference.mp3,Infatuation,ultimate,2,user_0|user_1,Infatuation

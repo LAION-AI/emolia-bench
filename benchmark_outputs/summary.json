@@ -1,0 +1,90 @@
+{
+  "mode": "remote",
+  "endpoint": "http://127.0.0.1:8765/v1/similarity",
+  "threshold": 0.0,
+  "labels_path": "/Users/robert/Developer/python_code/emolia-bench/analysis_outputs/benchmark_labels.csv",
+  "dataset_root": "/Users/robert/Developer/python_code/emolia-bench/dataset",
+  "rows_total": 7984,
+  "rows_evaluated_ok": 7984,
+  "missing_dataset_json": 0,
+  "evaluation_errors": 0,
+  "overall_binary": {
+    "n": 7984.0,
+    "accuracy": 0.501377755511022,
+    "balanced_accuracy": 0.5003703385690769,
+    "precision": 0.5783877349159249,
+    "recall": 0.5068255687973998,
+    "f1": 0.5402471417022751,
+    "tp": 2339.0,
+    "fp": 1705.0,
+    "tn": 1664.0,
+    "fn": 2276.0
+  },
+  "by_task_type": [
+    {
+      "task_type": "affirmative",
+      "n": 3998.0,
+      "accuracy": 0.49874937468734365,
+      "balanced_accuracy": 0.4942260306236007,
+      "f1": 0.6123791102514506
+    },
+    {
+      "task_type": "contrastive_1",
+      "n": 1000.0,
+      "accuracy": 0.499,
+      "balanced_accuracy": 0.4915888714298918,
+      "f1": 0.39419588875453443
+    },
+    {
+      "task_type": "contrastive_2",
+      "n": 1000.0,
+      "accuracy": 0.511,
+      "balanced_accuracy": 0.5202640230121225,
+      "f1": 0.45847176079734214
+    },
+    {
+      "task_type": "penultimate",
+      "n": 992.0,
+      "accuracy": 0.48689516129032256,
+      "balanced_accuracy": 0.4921307901907357,
+      "f1": 0.42485875706214693
+    },
+    {
+      "task_type": "ultimate",
+      "n": 994.0,
+      "accuracy": 0.5191146881287726,
+      "balanced_accuracy": 0.5211574952561671,
+      "f1": 0.4530892448512586
+    }
+  ],
+  "by_benchmark_bucket": [
+    {
+      "benchmark_bucket": "unanimous_present",
+      "n": 1808.0,
+      "accuracy": 0.5138274336283186,
+      "balanced_accuracy": NaN,
+      "f1": 0.6788454512239679
+    },
+    {
+      "benchmark_bucket": "majority_present",
+      "n": 2807.0,
+      "accuracy": 0.5023156394727467,
+      "balanced_accuracy": NaN,
+      "f1": 0.6687218401707375
+    },
+    {
+      "benchmark_bucket": "majority_absent",
+      "n": 2565.0,
+      "accuracy": 0.48771929824561405,
+      "balanced_accuracy": NaN,
+      "f1": NaN
+    },
+    {
+      "benchmark_bucket": "unanimous_absent",
+      "n": 804.0,
+      "accuracy": 0.513681592039801,
+      "balanced_accuracy": NaN,
+      "f1": NaN
+    }
+  ]
+}

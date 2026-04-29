@@ -1,0 +1,5 @@
+benchmark_bucket,n,accuracy,balanced_accuracy,f1
+unanimous_present,1808.0,0.5138274336283186,,0.6788454512239679
+majority_present,2807.0,0.5023156394727467,,0.6687218401707375
+majority_absent,2565.0,0.48771929824561405,,
+unanimous_absent,804.0,0.513681592039801,,
