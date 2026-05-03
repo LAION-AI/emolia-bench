@@ -1,6 +1,9 @@
 delete.py
 .DS_Store
 .venv
+annotations_raw/
+benchmark_outputs/
+benchmark_outputs_endpoint_test/
 __pycache__
 *.pyc
 *.pyo

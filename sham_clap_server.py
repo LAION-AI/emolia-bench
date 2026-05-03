@@ -23,7 +23,13 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from benchmark import emotion_to_prompt, sham_similarity, stem_from_annotation_filename
+from pathlib import Path as _PathAlias
+
+from benchmark import emotion_to_prompt, sham_similarity
+
+
+def stem_from_annotation_filename(file_name: str) -> str:
+    return _PathAlias(file_name).stem
 
 
 class Handler(BaseHTTPRequestHandler):

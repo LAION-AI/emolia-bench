@@ -1,0 +1,167 @@
+{
+  "subset": "emolia-emo",
+  "rating_scale": [
+    "not_present",
+    "weakly_present",
+    "strongly_present"
+  ],
+  "rows_raw": 23991,
+  "rows_deduplicated": 23958,
+  "items_total": 7988,
+  "items_complete": 7984,
+  "items_incomplete": 4,
+  "rater_coverage": {
+    "1": 2,
+    "2": 2,
+    "3": 7984
+  },
+  "annotators": [
+    "user_0",
+    "user_1",
+    "user_2"
+  ],
+  "agreement": {
+    "exact_3way_ordinal": 0.17347194388777556,
+    "exact_3way_binary": 0.3271543086172345,
+    "pairwise_exact_binary": 0.551436205744823,
+    "pairwise_exact_ordinal": 0.3914913159652638,
+    "pairwise_ordinal_kappa": {
+      "user_0__user_1": 0.17195216597873986,
+      "user_0__user_2": 0.05820224316356543,
+      "user_1__user_2": 0.014102920480263516,
+      "mean": 0.0814191098741896
+    },
+    "pairwise_binary_kappa": {
+      "user_0__user_1": 0.23119999132970967,
+      "user_0__user_2": 0.08045211239017597,
+      "user_1__user_2": 0.02747626832317113,
+      "mean": 0.11304279068101891
+    },
+    "fleiss_ordinal_kappa": 0.05835491701332644,
+    "fleiss_binary_kappa": 0.08600314367115888
+  },
+  "majority_present_rate": 0.5779919879819729,
+  "preselection_confirm_rate": 0.7109414121181773,
+  "task_types": [
+    {
+      "task_type": "affirmative",
+      "items": 4000,
+      "intended_present": 1,
+      "majority_present_rate": 0.7885,
+      "preselection_confirm_rate": 0.7885,
+      "unanimous_binary_rate": 0.446,
+      "unanimous_ordinal_rate": 0.17425
+    },
+    {
+      "task_type": "contrastive_1",
+      "items": 1000,
+      "intended_present": 0,
+      "majority_present_rate": 0.349,
+      "preselection_confirm_rate": 0.651,
+      "unanimous_binary_rate": 0.212,
+      "unanimous_ordinal_rate": 0.177
+    },
+    {
+      "task_type": "contrastive_2",
+      "items": 1000,
+      "intended_present": 0,
+      "majority_present_rate": 0.372,
+      "preselection_confirm_rate": 0.628,
+      "unanimous_binary_rate": 0.204,
+      "unanimous_ordinal_rate": 0.172
+    },
+    {
+      "task_type": "ultimate",
+      "items": 995,
+      "intended_present": 0,
+      "majority_present_rate": 0.3758793969849246,
+      "preselection_confirm_rate": 0.6241206030150753,
+      "unanimous_binary_rate": 0.207035175879397,
+      "unanimous_ordinal_rate": 0.16984924623115577
+    },
+    {
+      "task_type": "penultimate",
+      "items": 993,
+      "intended_present": 0,
+      "majority_present_rate": 0.37059415911379656,
+      "preselection_confirm_rate": 0.6294058408862034,
+      "unanimous_binary_rate": 0.2094662638469285,
+      "unanimous_ordinal_rate": 0.17220543806646527
+    }
+  ],
+  "easiest_emotions": [
+    {
+      "queried_emotion": "Astonishment_Surprise",
+      "items": 100,
+      "majority_present_rate": 0.89,
+      "unanimous_binary_rate": 0.49,
+      "unanimous_ordinal_rate": 0.18
+    },
+    {
+      "queried_emotion": "Hope_Enthusiasm_Optimism",
+      "items": 111,
+      "majority_present_rate": 0.9009009009009009,
+      "unanimous_binary_rate": 0.5675675675675675,
+      "unanimous_ordinal_rate": 0.1981981981981982
+    },
+    {
+      "queried_emotion": "Interest",
+      "items": 101,
+      "majority_present_rate": 0.900990099009901,
+      "unanimous_binary_rate": 0.6039603960396039,
+      "unanimous_ordinal_rate": 0.2079207920792079
+    },
+    {
+      "queried_emotion": "Doubt",
+      "items": 100,
+      "majority_present_rate": 0.96,
+      "unanimous_binary_rate": 0.55,
+      "unanimous_ordinal_rate": 0.18
+    },
+    {
+      "queried_emotion": "Thankfulness_Gratitude",
+      "items": 103,
+      "majority_present_rate": 0.9805825242718447,
+      "unanimous_binary_rate": 0.6796116504854369,
+      "unanimous_ordinal_rate": 0.3300970873786408
+    }
+  ],
+  "hardest_emotions": [
+    {
+      "queried_emotion": "Sexual_Lust",
+      "items": 280,
+      "majority_present_rate": 0.2892857142857143,
+      "unanimous_binary_rate": 0.3464285714285714,
+      "unanimous_ordinal_rate": 0.30357142857142855
+    },
+    {
+      "queried_emotion": "Fear",
+      "items": 311,
+      "majority_present_rate": 0.3279742765273312,
+      "unanimous_binary_rate": 0.27009646302250806,
+      "unanimous_ordinal_rate": 0.22508038585209003
+    },
+    {
+      "queried_emotion": "Embarrassment",
+      "items": 317,
+      "majority_present_rate": 0.4479495268138801,
+      "unanimous_binary_rate": 0.24605678233438485,
+      "unanimous_ordinal_rate": 0.1608832807570978
+    },
+    {
+      "queried_emotion": "Intoxication_Altered_States_of_Consciousness",
+      "items": 606,
+      "majority_present_rate": 0.45544554455445546,
+      "unanimous_binary_rate": 0.18646864686468648,
+      "unanimous_ordinal_rate": 0.10396039603960396
+    },
+    {
+      "queried_emotion": "Triumph",
+      "items": 378,
+      "majority_present_rate": 0.4708994708994709,
+      "unanimous_binary_rate": 0.26455026455026454,
+      "unanimous_ordinal_rate": 0.15873015873015872
+    }
+  ],
+  "human_upper_bound_binary": 0.551436205744823
+}
