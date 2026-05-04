@@ -58,7 +58,130 @@ DIM_ITEM_KEYS = ["file_name", "dimension", "level", "polarity"]
 # Annotators are free to disagree with the preselection on any item — these
 # columns just expose which way each item was sampled, so we can quantify how
 # often raters confirm or overturn the prior.
+#
+# The preselection prior was produced by gemini-3-flash judging each clip
+# before any human saw it. We treat that prior as a synthetic 4th annotator
+# (`PRESELECTION_RATER_NAME`) when the user wants to see the human+model
+# panel, so kappa / pairwise / LOO numbers can be recomputed with the prior
+# included.
 EMO_AFFIRMATIVE_TASK = "affirmative"
+PRESELECTION_RATER_NAME = "gemini3flash_preselect"
+
+
+def augmented_agreement(
+    cleaned: pd.DataFrame,
+    item_keys: list[str],
+    *,
+    subset: str,
+    target_col: str,
+) -> dict[str, Any]:
+    """Recompute pairwise + LOO + Fleiss kappa with the preselection prior added.
+
+    The synthetic preselection rater is concatenated onto ``cleaned`` and the
+    same metrics are recomputed. Returns ``nan`` when the augmented panel still
+    has too few comparisons.
+    """
+    synth = synthesize_preselection_annotations(cleaned, item_keys, subset=subset)
+    if not len(synth):
+        return {
+            "preselection_pairwise_accuracy": float("nan"),
+            "preselection_pairwise_balanced_accuracy": float("nan"),
+            "preselection_loo_accuracy": float("nan"),
+            "preselection_loo_balanced_accuracy": float("nan"),
+            "preselection_loo_n_annotations": 0.0,
+            "preselection_fleiss_kappa": float("nan"),
+        }
+    augmented = pd.concat([cleaned, synth[cleaned.columns.intersection(synth.columns)]], ignore_index=True)
+    pairwise = pairwise_human_metrics(augmented, item_keys, target_col)
+    loo = leave_one_out_human_metrics(augmented, item_keys, target_col)
+    pivot = augmented.pivot_table(
+        index=item_keys, columns="username", values=target_col, aggfunc="first"
+    )
+    counts = counts_for_fleiss(pivot, [0, 1])
+    # Fleiss requires equal coverage; restrict to items where every column is filled.
+    mask = pivot.notna().all(axis=1)
+    fleiss = float(fleiss_kappa(counts_for_fleiss(pivot[mask], [0, 1]))) if mask.any() else float("nan")
+    # Gemini-vs-human-consensus: treat the synthetic rater as a "model" and
+    # score it against the majority vote of the real human raters per item.
+    real_pivot = cleaned.pivot_table(
+        index=item_keys, columns="username", values=target_col, aggfunc="first"
+    )
+    truths: list[int] = []
+    preds: list[int] = []
+    synth_lookup = synth.set_index(item_keys)[target_col].to_dict()
+    for idx, row in real_pivot.iterrows():
+        votes = row.dropna().astype(int).to_numpy()
+        if len(votes) < 2:
+            continue
+        yes = int((votes == 1).sum())
+        no = int((votes == 0).sum())
+        if yes == no:
+            continue
+        consensus = 1 if yes > no else 0
+        if idx in synth_lookup:
+            truths.append(consensus)
+            preds.append(int(synth_lookup[idx]))
+    if truths:
+        truths_arr = np.asarray(truths, dtype=int)
+        preds_arr = np.asarray(preds, dtype=int)
+        gemini_acc = float((truths_arr == preds_arr).mean())
+        gemini_bal = _balanced_accuracy(truths_arr, preds_arr)
+        gemini_n = len(truths_arr)
+    else:
+        gemini_acc = float("nan")
+        gemini_bal = float("nan")
+        gemini_n = 0
+
+    return {
+        "preselection_pairwise_accuracy": pairwise["pairwise_accuracy"],
+        "preselection_pairwise_balanced_accuracy": pairwise["pairwise_balanced_accuracy"],
+        "preselection_loo_accuracy": loo["loo_accuracy"],
+        "preselection_loo_balanced_accuracy": loo["loo_balanced_accuracy"],
+        "preselection_loo_n_annotations": loo["loo_n_annotations"],
+        "preselection_fleiss_kappa": fleiss,
+        "preselection_n_full_coverage_items": int(mask.sum()),
+        "gemini_vs_human_consensus_accuracy": gemini_acc,
+        "gemini_vs_human_consensus_balanced_accuracy": gemini_bal,
+        "gemini_vs_human_consensus_n_items": float(gemini_n),
+    }
+
+
+def synthesize_preselection_annotations(
+    cleaned: pd.DataFrame,
+    item_keys: list[str],
+    *,
+    subset: str,
+) -> pd.DataFrame:
+    """Return one synthetic annotation per item encoding the preselection prior.
+
+    The synthetic rater (``PRESELECTION_RATER_NAME``) votes ``yes`` / ``present``
+    on items the sampling pipeline judged likely-positive and ``no`` /
+    ``not_present`` on items judged likely-negative. We use the *cleaned*
+    annotation table (deduplicated, item-level keys) as the source of truth
+    for which (item, prior) tuples exist — this guarantees we only synthesize
+    a vote for items that real annotators have at least seen.
+    """
+    if not len(cleaned):
+        return cleaned.iloc[0:0].copy()
+    items = cleaned[item_keys].drop_duplicates().reset_index(drop=True)
+    if subset == "emolia-emo":
+        intended_positive = items["task_type"] == EMO_AFFIRMATIVE_TASK
+        rating = np.where(intended_positive, "strongly_present", "not_present")
+        rating_int = np.where(intended_positive, 2, 0)
+        present = intended_positive.astype(int)
+    elif subset == "emolia-dim":
+        intended_positive = items["polarity"] == "positive"
+        rating = np.where(intended_positive, "yes", "no")
+        rating_int = intended_positive.astype(int)
+        present = intended_positive.astype(int)
+    else:
+        raise ValueError(f"Unknown subset {subset!r}")
+    synth = items.copy()
+    synth["username"] = PRESELECTION_RATER_NAME
+    synth["rating"] = rating
+    synth["rating_int"] = rating_int
+    synth["present"] = present
+    return synth
 
 
 # ---------- agreement primitives ----------
@@ -546,6 +669,7 @@ def run_emo(out_dir: Path) -> dict[str, Any]:
         "human_loo_balanced_accuracy": float("nan"),
         "human_loo_n_annotations": 0.0,
     }
+    augmented = augmented_agreement(cleaned, EMO_ITEM_KEYS, subset="emolia-emo", target_col="present")
     labels = build_emo_labels(cleaned)
     labels = append_n_raters(labels, cleaned, EMO_ITEM_KEYS)
     per_task = emo_per_task(labels)
@@ -569,6 +693,7 @@ def run_emo(out_dir: Path) -> dict[str, Any]:
         "rater_coverage": {int(k): int(v) for k, v in coverage.items()},
         "annotators": users["username"].tolist(),
         "agreement": agreement,
+        "augmented_agreement": augmented,
         "majority_present_rate": float(labels["majority_present"].mean()),
         "preselection_confirm_rate": float(labels["matches_intended_label"].mean()),
         "task_types": per_task.to_dict(orient="records"),
@@ -591,6 +716,7 @@ def run_emo(out_dir: Path) -> dict[str, Any]:
         "users": users,
         "incomplete": incomplete,
         "agreement": agreement,
+        "augmented": augmented,
     }
 
 
@@ -612,6 +738,7 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
         "human_loo_balanced_accuracy": float("nan"),
         "human_loo_n_annotations": 0.0,
     }
+    augmented = augmented_agreement(cleaned, DIM_ITEM_KEYS, subset="emolia-dim", target_col="rating_int")
     labels = build_dim_labels(cleaned)
     labels = append_n_raters(labels, cleaned, DIM_ITEM_KEYS)
     per_dim = dim_per_dimension(labels)
@@ -653,6 +780,7 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
         "rater_coverage": {int(k): int(v) for k, v in coverage.items()},
         "annotators": users["username"].tolist(),
         "agreement": agreement,
+        "augmented_agreement": augmented,
         "majority_yes_rate": float(labels["majority_present"].mean()),
         "polarity_match_rate": float(labels["matches_intended_polarity"].mean()),
         "dimensions": per_dim.to_dict(orient="records"),
@@ -675,6 +803,7 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
         "users": users,
         "incomplete": incomplete,
         "agreement": agreement,
+        "augmented": augmented,
         "flags": flags,
     }
 
@@ -719,13 +848,20 @@ def render_emo_section(res: dict[str, Any]) -> list[str]:
         "These are the numbers to compare a CLAP-style model's accuracy / "
         "balanced accuracy against.",
         "",
-        "| Metric | Value |",
-        "|---|---|",
-        f"| Pairwise human accuracy | {fmt(a['human_pairwise_accuracy'])} |",
-        f"| Pairwise human balanced accuracy | {fmt(a['human_pairwise_balanced_accuracy'])} |",
-        f"| Leave-one-out human accuracy | {fmt(a['human_loo_accuracy'])} |",
-        f"| Leave-one-out human balanced accuracy | {fmt(a['human_loo_balanced_accuracy'])} |",
-        f"| LOO comparisons used | {int(a.get('human_loo_n_annotations') or 0)} |",
+        "| Metric | Humans only | Humans + Gemini preselection |",
+        "|---|---:|---:|",
+        f"| Pairwise accuracy | {fmt(a['human_pairwise_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_pairwise_accuracy'])} |",
+        f"| Pairwise balanced accuracy | {fmt(a['human_pairwise_balanced_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_pairwise_balanced_accuracy'])} |",
+        f"| Leave-one-out accuracy | {fmt(a['human_loo_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_loo_accuracy'])} |",
+        f"| Leave-one-out balanced accuracy | {fmt(a['human_loo_balanced_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_loo_balanced_accuracy'])} |",
+        f"| LOO comparisons used | {int(a.get('human_loo_n_annotations') or 0)} | "
+        f"{int(res['augmented'].get('preselection_loo_n_annotations') or 0)} |",
+        f"| Fleiss κ (full-coverage items only) | {fmt(a.get('fleiss_binary_kappa'))} | "
+        f"{fmt(res['augmented'].get('preselection_fleiss_kappa'))} |",
         "",
         "### Per-task summary",
         "",
@@ -809,13 +945,20 @@ def render_dim_section(res: dict[str, Any]) -> list[str]:
         "These are the numbers to compare a CLAP-style model's accuracy / "
         "balanced accuracy against.",
         "",
-        "| Metric | Value |",
-        "|---|---|",
-        f"| Pairwise human accuracy | {fmt(a['human_pairwise_accuracy'])} |",
-        f"| Pairwise human balanced accuracy | {fmt(a['human_pairwise_balanced_accuracy'])} |",
-        f"| Leave-one-out human accuracy | {fmt(a['human_loo_accuracy'])} |",
-        f"| Leave-one-out human balanced accuracy | {fmt(a['human_loo_balanced_accuracy'])} |",
-        f"| LOO comparisons used | {int(a.get('human_loo_n_annotations') or 0)} |",
+        "| Metric | Humans only | Humans + Gemini preselection |",
+        "|---|---:|---:|",
+        f"| Pairwise accuracy | {fmt(a['human_pairwise_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_pairwise_accuracy'])} |",
+        f"| Pairwise balanced accuracy | {fmt(a['human_pairwise_balanced_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_pairwise_balanced_accuracy'])} |",
+        f"| Leave-one-out accuracy | {fmt(a['human_loo_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_loo_accuracy'])} |",
+        f"| Leave-one-out balanced accuracy | {fmt(a['human_loo_balanced_accuracy'])} | "
+        f"{fmt(res['augmented']['preselection_loo_balanced_accuracy'])} |",
+        f"| LOO comparisons used | {int(a.get('human_loo_n_annotations') or 0)} | "
+        f"{int(res['augmented'].get('preselection_loo_n_annotations') or 0)} |",
+        f"| Fleiss κ (full-coverage items only) | {fmt(a.get('fleiss_binary_kappa'))} | "
+        f"{fmt(res['augmented'].get('preselection_fleiss_kappa'))} |",
         "",
         "### Per-polarity summary",
         "",
@@ -900,6 +1043,18 @@ def _human_bound_rows(subset_name: str, agreement: dict[str, Any]) -> str:
     )
 
 
+def _augmented_rows(subset_name: str, augmented: dict[str, Any]) -> str:
+    return (
+        f"| {subset_name} | "
+        f"{fmt(augmented['preselection_pairwise_accuracy'])} | "
+        f"{fmt(augmented['preselection_pairwise_balanced_accuracy'])} | "
+        f"{fmt(augmented['preselection_loo_accuracy'])} | "
+        f"{fmt(augmented['preselection_loo_balanced_accuracy'])} | "
+        f"{int(augmented.get('preselection_loo_n_annotations') or 0)} | "
+        f"{fmt(augmented.get('preselection_fleiss_kappa'))} |"
+    )
+
+
 def render_combined_report(emo: dict[str, Any], dim: dict[str, Any]) -> str:
     lines = [
         "# EmoLia annotation analysis",
@@ -924,6 +1079,40 @@ def render_combined_report(emo: dict[str, Any], dim: dict[str, Any]) -> str:
         "|---|---:|---:|---:|---:|---:|",
         _human_bound_rows("emolia-emo", emo["agreement"]),
         _human_bound_rows("emolia-dim", dim["agreement"]),
+        "",
+        "## Human ceiling with the preselection prior as a 4th rater",
+        "",
+        "The sampling pipeline (gemini-3-flash) already cast a yes/no vote",
+        "before any human saw a clip. We can treat that vote as a synthetic",
+        "rater (`gemini3flash_preselect`) — `yes` on `affirmative` / `positive`",
+        "items, `no` on the rest — and recompute the same metrics on the",
+        "augmented panel. This sharpens the consensus (more votes per item)",
+        "and lets us see how Gemini-as-rater compares to a human.",
+        "",
+        "| Subset | Pairwise accuracy | Pairwise balanced acc. | LOO accuracy | LOO balanced acc. | LOO n | Fleiss κ (full coverage) |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+        _augmented_rows("emolia-emo", emo["augmented"]),
+        _augmented_rows("emolia-dim", dim["augmented"]),
+        "",
+        "### How well does Gemini's preselection itself match the human consensus?",
+        "",
+        "Treating Gemini's prior as a model and scoring it against the human",
+        "majority vote (same way `benchmark.py` scores a CLAP model):",
+        "",
+        "| Subset | Items | Accuracy | Balanced accuracy |",
+        "|---|---:|---:|---:|",
+        (
+            f"| emolia-emo | "
+            f"{int(emo['augmented'].get('gemini_vs_human_consensus_n_items') or 0)} | "
+            f"{fmt(emo['augmented'].get('gemini_vs_human_consensus_accuracy'))} | "
+            f"{fmt(emo['augmented'].get('gemini_vs_human_consensus_balanced_accuracy'))} |"
+        ),
+        (
+            f"| emolia-dim | "
+            f"{int(dim['augmented'].get('gemini_vs_human_consensus_n_items') or 0)} | "
+            f"{fmt(dim['augmented'].get('gemini_vs_human_consensus_accuracy'))} | "
+            f"{fmt(dim['augmented'].get('gemini_vs_human_consensus_balanced_accuracy'))} |"
+        ),
         "",
         "## Quick stats",
         "",

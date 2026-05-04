@@ -45,6 +45,18 @@
     "human_loo_balanced_accuracy": 0.5718007365530084,
     "human_loo_n_annotations": 13208.0
   },
+  "augmented_agreement": {
+    "preselection_pairwise_accuracy": 0.6022050726311887,
+    "preselection_pairwise_balanced_accuracy": 0.6095881168015719,
+    "preselection_loo_accuracy": 0.6349946778536096,
+    "preselection_loo_balanced_accuracy": 0.6316910074474198,
+    "preselection_loo_n_annotations": 31942.0,
+    "preselection_fleiss_kappa": 0.19595795656435058,
+    "preselection_n_full_coverage_items": 7984,
+    "gemini_vs_human_consensus_accuracy": 0.7111194590533434,
+    "gemini_vs_human_consensus_balanced_accuracy": 0.7162668617478105,
+    "gemini_vs_human_consensus_n_items": 7986.0
+  },
   "majority_present_rate": 0.5779919879819729,
   "preselection_confirm_rate": 0.7109414121181773,
   "task_types": [
