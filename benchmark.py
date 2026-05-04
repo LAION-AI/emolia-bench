@@ -180,34 +180,55 @@ def fmt(x: Any, digits: int = 4) -> str:
 
 # ---------- score rubric ----------
 
-def score_rubric(majority_rate: float, human_upper: float | None) -> list[str]:
+def score_rubric(majority_rate: float, human_numbers: dict[str, Any]) -> list[str]:
     """Return a list of markdown lines describing the score rubric.
 
-    Defines fixed quality bands so the model trainer knows what is good or bad
-    without having to compute anything themselves.
+    The rubric prints both **accuracy** and **balanced accuracy** for humans on
+    the same binary task (computed in ``analysis.py``), so a model's score has
+    a directly comparable human ceiling — this is what reviewers and coauthors
+    will ask for first.
     """
     majority_rate = float(majority_rate)
     majority_baseline = max(majority_rate, 1.0 - majority_rate)
-    human_str = fmt(human_upper, 3) if human_upper is not None else "n/a"
+    pairwise_acc = human_numbers.get("human_accuracy_binary")
+    pairwise_bal = human_numbers.get("human_balanced_accuracy_binary")
+    loo_acc = human_numbers.get("human_loo_accuracy_binary")
+    loo_bal = human_numbers.get("human_loo_balanced_accuracy_binary")
+    loo_n = int(human_numbers.get("human_loo_n_annotations") or 0)
     return [
         "## Score rubric (read me first)",
         "",
         "Primary metric: **balanced accuracy** vs `majority_present` (binary).",
         "Secondary metric: **F1** of the positive class.",
         "",
-        f"- Random / chance baseline: **0.500**",
-        f"- Always-majority baseline (predict the more common class): **{majority_baseline:.3f}**",
-        f"- Human inter-rater upper bound (mean pairwise exact agreement): **{human_str}**",
+        f"- Random / chance baseline: **0.500** balanced accuracy",
+        f"- Always-majority baseline: **{majority_baseline:.3f}** accuracy "
+        f"(0.500 balanced)",
+        "",
+        "**Human upper bound on the exact same task** (computed in",
+        "`analysis_outputs/<subset>/summary.json`):",
+        "",
+        "| Human metric | Accuracy | Balanced accuracy |",
+        "|---|---:|---:|",
+        f"| Pairwise (rater A vs rater B on shared items) | "
+        f"{fmt(pairwise_acc, 3)} | {fmt(pairwise_bal, 3)} |",
+        f"| Leave-one-out (rater vs majority of others, n={loo_n}) | "
+        f"{fmt(loo_acc, 3)} | {fmt(loo_bal, 3)} |",
+        "",
+        "These are the numbers to compare your model's score against. The LOO",
+        "balanced accuracy is the most apples-to-apples — it answers \"if a",
+        "single human took this benchmark, what would they score against the",
+        "consensus?\"",
         "",
         "Quality bands (balanced accuracy on `majority_present`):",
         "",
         "| Band | Balanced accuracy | Notes |",
         "|---|---|---|",
         "| Bad | < 0.55 | At or below random; model isn't learning |",
-        "| Weak | 0.55 – 0.65 | Some signal, far from human |",
-        "| Medium | 0.65 – 0.75 | Useful but lossy; decent training target |",
+        "| Weak | 0.55 – 0.65 | Some signal, around single-human level |",
+        "| Medium | 0.65 – 0.75 | Above single-human; useful training target |",
         "| Good | 0.75 – 0.85 | Strong CLAP-style performance |",
-        "| Excellent | ≥ 0.85 | Approaches human inter-rater agreement |",
+        "| Excellent | ≥ 0.85 | Approaches the consensus of multiple humans |",
         "",
         "If you train a model, **maximize balanced accuracy on the unanimous",
         "subset** (`benchmark_bucket` in {`unanimous_*`}) — those items are the",
@@ -437,13 +458,22 @@ def write_subset_report(
         "- `metrics_by_*.csv` — slice metrics",
         "- `summary.json` — machine-readable summary",
         "",
-        "## Score rubric (recap)",
+        "## Score rubric (recap — share these numbers with reviewers)",
         "",
-        f"Balanced accuracy = **{fmt(overall['balanced_accuracy'])}** -> "
-        f"**{quality_band(overall['balanced_accuracy'])}** band.",
-        "Compare to: random=0.500, "
-        f"majority-class baseline={summary['majority_baseline']:.3f}, "
-        f"human upper bound={fmt(summary.get('human_upper_bound_binary'), 3)}.",
+        f"Model balanced accuracy = **{fmt(overall['balanced_accuracy'])}** "
+        f"-> **{quality_band(overall['balanced_accuracy'])}** band.",
+        "",
+        "Comparable numbers on the *same binary task*:",
+        "",
+        f"- Random baseline: **0.500**",
+        f"- Always-majority baseline: **{summary['majority_baseline']:.3f}** "
+        "accuracy (0.500 balanced)",
+        f"- Single-human pairwise: accuracy **{fmt(summary.get('human_accuracy_binary'), 3)}**, "
+        f"balanced **{fmt(summary.get('human_balanced_accuracy_binary'), 3)}**",
+        f"- Single-human leave-one-out (vs. majority of others, n="
+        f"{int(summary.get('human_loo_n_annotations') or 0)}): "
+        f"accuracy **{fmt(summary.get('human_loo_accuracy_binary'), 3)}**, "
+        f"balanced **{fmt(summary.get('human_loo_balanced_accuracy_binary'), 3)}**",
         "",
     ]
     text = "\n".join(md)
@@ -487,12 +517,16 @@ def run_subset(
     analysis_summary: dict[str, Any] = (
         json.loads(analysis_summary_path.read_text()) if analysis_summary_path.exists() else {}
     )
-    if subset == "emolia-emo":
-        majority_rate = float(labels["majority_present"].mean()) if len(labels) else 0.5
-    else:
-        majority_rate = float(labels["majority_present"].mean()) if len(labels) else 0.5
+    majority_rate = float(labels["majority_present"].mean()) if len(labels) else 0.5
     majority_baseline = max(majority_rate, 1.0 - majority_rate)
     human_upper = analysis_summary.get("human_upper_bound_binary")
+    human_numbers = {
+        "human_accuracy_binary": analysis_summary.get("human_accuracy_binary"),
+        "human_balanced_accuracy_binary": analysis_summary.get("human_balanced_accuracy_binary"),
+        "human_loo_accuracy_binary": analysis_summary.get("human_loo_accuracy_binary"),
+        "human_loo_balanced_accuracy_binary": analysis_summary.get("human_loo_balanced_accuracy_binary"),
+        "human_loo_n_annotations": analysis_summary.get("human_loo_n_annotations"),
+    }
 
     if subset == "emolia-emo":
         rows = emo_iter(labels, emo_audio_index(dataset_root))
@@ -508,7 +542,7 @@ def run_subset(
         send_audio=send_audio,
     )
 
-    rubric_lines = score_rubric(majority_rate, human_upper)
+    rubric_lines = score_rubric(majority_rate, human_numbers)
     summary: dict[str, Any] = {
         "subset": subset,
         "mode": "remote" if endpoint else "sham_hash",
@@ -520,6 +554,7 @@ def run_subset(
         "evaluation_errors": int(errors),
         "majority_baseline": majority_baseline,
         "human_upper_bound_binary": human_upper,
+        **human_numbers,
         "labels_path": str(labels_path.resolve()),
     }
     return write_subset_report(subset, out_dir, predictions, summary, rubric_lines)

@@ -92,22 +92,29 @@ def fleiss_kappa(counts: np.ndarray) -> float:
 
 
 def pairwise_kappa(pivot: pd.DataFrame, labels: list[int]) -> dict[str, float]:
+    """Mean Cohen's kappa over rater pairs, evaluated on items both raters rated."""
     out: dict[str, float] = {}
     for ua, ub in combinations(pivot.columns, 2):
+        sub = pivot[[ua, ub]].dropna()
+        if sub.empty:
+            out[f"{ua}__{ub}"] = float("nan")
+            continue
         out[f"{ua}__{ub}"] = cohen_kappa(
-            pivot[ua].to_numpy(dtype=int),
-            pivot[ub].to_numpy(dtype=int),
+            sub[ua].to_numpy(dtype=int),
+            sub[ub].to_numpy(dtype=int),
             labels,
         )
-    out["mean"] = float(np.nanmean(list(v for k, v in out.items() if k != "mean")))
+    pair_values = [v for k, v in out.items() if k != "mean"]
+    out["mean"] = float(np.nanmean(pair_values)) if pair_values else float("nan")
     return out
 
 
 def counts_for_fleiss(pivot: pd.DataFrame, labels: list[int]) -> np.ndarray:
+    """Per-item label counts, skipping NaN cells (so unrated raters don't count)."""
     rows = []
     for _, row in pivot.iterrows():
-        values = row.to_numpy(dtype=int)
-        rows.append([(values == lbl).sum() for lbl in labels])
+        values = row.dropna().to_numpy(dtype=int)
+        rows.append([int((values == lbl).sum()) for lbl in labels])
     return np.asarray(rows, dtype=int)
 
 
@@ -126,6 +133,105 @@ def pairwise_exact_agreement(pivot: pd.DataFrame) -> float:
     for ua, ub in combinations(pivot.columns, 2):
         matches.append(float((pivot[ua].to_numpy() == pivot[ub].to_numpy()).mean()))
     return float(np.mean(matches))
+
+
+def _balanced_accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """Mean of sensitivity and specificity; nan if either class is missing."""
+    pos = y_true == 1
+    neg = y_true == 0
+    if not pos.any() or not neg.any():
+        return float("nan")
+    sens = float((y_pred[pos] == 1).mean())
+    spec = float((y_pred[neg] == 0).mean())
+    return 0.5 * (sens + spec)
+
+
+def pairwise_human_metrics(
+    annotations: pd.DataFrame, item_keys: list[str], target_col: str
+) -> dict[str, float]:
+    """Mean accuracy + balanced accuracy across all rater pairs.
+
+    For every (rater_a, rater_b) pair, take items both rated, treat ``a`` as
+    truth and ``b`` as prediction, and compute exact accuracy + balanced
+    accuracy. Symmetric over direction (both ``a→b`` and ``b→a`` are added),
+    so the resulting accuracy is also the mean pairwise exact agreement.
+    """
+    pivot = annotations.pivot_table(
+        index=item_keys, columns="username", values=target_col, aggfunc="first"
+    )
+    raters = list(pivot.columns)
+    accs: list[float] = []
+    bals: list[float] = []
+    for ua, ub in combinations(raters, 2):
+        sub = pivot[[ua, ub]].dropna()
+        if sub.empty:
+            continue
+        a = sub[ua].to_numpy(dtype=int)
+        b = sub[ub].to_numpy(dtype=int)
+        accs.append(float((a == b).mean()))
+        for truth, pred in ((a, b), (b, a)):
+            bal = _balanced_accuracy(truth, pred)
+            if not np.isnan(bal):
+                bals.append(bal)
+    return {
+        "pairwise_accuracy": float(np.mean(accs)) if accs else float("nan"),
+        "pairwise_balanced_accuracy": float(np.mean(bals)) if bals else float("nan"),
+        "n_rater_pairs": float(len(accs)),
+    }
+
+
+def leave_one_out_human_metrics(
+    annotations: pd.DataFrame, item_keys: list[str], target_col: str
+) -> dict[str, float]:
+    """Each rater scored against the majority vote of the others on shared items.
+
+    For every annotation (rater R on item I) where item I has at least two
+    *other* raters with a clear majority, compare R's vote to that majority.
+    Returns overall accuracy and balanced accuracy.
+
+    This is the cleanest "how good is a single human?" number to compare
+    directly to a model's balanced accuracy.
+    """
+    if not len(annotations):
+        return {
+            "loo_accuracy": float("nan"),
+            "loo_balanced_accuracy": float("nan"),
+            "loo_n_annotations": 0.0,
+        }
+    truths: list[int] = []
+    preds: list[int] = []
+    grouped = annotations.groupby(item_keys, sort=False)[target_col]
+    item_arrays = {key: g.to_numpy(dtype=int) for key, g in grouped}
+    item_indices = {key: g.index.to_numpy() for key, g in grouped}
+    target = annotations[target_col].to_numpy(dtype=int)
+    item_keys_tuple = annotations[item_keys].apply(tuple, axis=1).to_numpy()
+    for key, indices in item_indices.items():
+        votes = item_arrays[key]
+        if len(votes) < 3:
+            continue
+        for local_idx, global_idx in enumerate(indices):
+            others = np.delete(votes, local_idx)
+            if len(others) < 2:
+                continue
+            yes = int((others == 1).sum())
+            no = int((others == 0).sum())
+            if yes == no:
+                continue
+            truths.append(1 if yes > no else 0)
+            preds.append(int(target[global_idx]))
+    if not truths:
+        return {
+            "loo_accuracy": float("nan"),
+            "loo_balanced_accuracy": float("nan"),
+            "loo_n_annotations": 0.0,
+        }
+    truths_arr = np.asarray(truths, dtype=int)
+    preds_arr = np.asarray(preds, dtype=int)
+    return {
+        "loo_accuracy": float((truths_arr == preds_arr).mean()),
+        "loo_balanced_accuracy": _balanced_accuracy(truths_arr, preds_arr),
+        "loo_n_annotations": float(len(truths_arr)),
+    }
 
 
 # ---------- generic per-subset loader ----------
@@ -234,13 +340,15 @@ def build_emo_labels(complete: pd.DataFrame) -> pd.DataFrame:
     return labels.sort_values(["task_type", "queried_emotion", "file_name"]).reset_index(drop=True)
 
 
-def emo_agreement(complete: pd.DataFrame) -> dict[str, Any]:
+def emo_agreement(complete: pd.DataFrame, partial: pd.DataFrame) -> dict[str, Any]:
     ordinal_pivot = complete.pivot_table(
         index=EMO_ITEM_KEYS, columns="username", values="rating_int", aggfunc="first"
     ).sort_index(axis=1)
     binary_pivot = complete.pivot_table(
         index=EMO_ITEM_KEYS, columns="username", values="present", aggfunc="first"
     ).sort_index(axis=1)
+    pairwise = pairwise_human_metrics(partial, EMO_ITEM_KEYS, "present")
+    loo = leave_one_out_human_metrics(partial, EMO_ITEM_KEYS, "present")
     return {
         "exact_3way_ordinal": float((ordinal_pivot.nunique(axis=1) == 1).mean()),
         "exact_3way_binary": float((binary_pivot.nunique(axis=1) == 1).mean()),
@@ -250,6 +358,11 @@ def emo_agreement(complete: pd.DataFrame) -> dict[str, Any]:
         "pairwise_binary_kappa": pairwise_kappa(binary_pivot, [0, 1]),
         "fleiss_ordinal_kappa": float(fleiss_kappa(counts_for_fleiss(ordinal_pivot, [0, 1, 2]))),
         "fleiss_binary_kappa": float(fleiss_kappa(counts_for_fleiss(binary_pivot, [0, 1]))),
+        "human_pairwise_accuracy": pairwise["pairwise_accuracy"],
+        "human_pairwise_balanced_accuracy": pairwise["pairwise_balanced_accuracy"],
+        "human_loo_accuracy": loo["loo_accuracy"],
+        "human_loo_balanced_accuracy": loo["loo_balanced_accuracy"],
+        "human_loo_n_annotations": loo["loo_n_annotations"],
     }
 
 
@@ -336,15 +449,22 @@ def build_dim_labels(complete: pd.DataFrame) -> pd.DataFrame:
     return labels.sort_values(["dimension", "level", "polarity", "file_name"]).reset_index(drop=True)
 
 
-def dim_agreement(complete: pd.DataFrame) -> dict[str, Any]:
+def dim_agreement(complete: pd.DataFrame, partial: pd.DataFrame) -> dict[str, Any]:
     binary_pivot = complete.pivot_table(
         index=DIM_ITEM_KEYS, columns="username", values="rating_int", aggfunc="first"
     ).sort_index(axis=1)
+    pairwise = pairwise_human_metrics(partial, DIM_ITEM_KEYS, "rating_int")
+    loo = leave_one_out_human_metrics(partial, DIM_ITEM_KEYS, "rating_int")
     return {
         "exact_3way_binary": float((binary_pivot.nunique(axis=1) == 1).mean()),
         "pairwise_exact_binary": pairwise_exact_agreement(binary_pivot),
         "pairwise_binary_kappa": pairwise_kappa(binary_pivot, [0, 1]),
         "fleiss_binary_kappa": float(fleiss_kappa(counts_for_fleiss(binary_pivot, [0, 1]))),
+        "human_pairwise_accuracy": pairwise["pairwise_accuracy"],
+        "human_pairwise_balanced_accuracy": pairwise["pairwise_balanced_accuracy"],
+        "human_loo_accuracy": loo["loo_accuracy"],
+        "human_loo_balanced_accuracy": loo["loo_balanced_accuracy"],
+        "human_loo_n_annotations": loo["loo_n_annotations"],
     }
 
 
@@ -411,7 +531,7 @@ def run_emo(out_dir: Path) -> dict[str, Any]:
     complete["rating_int"] = complete["rating"].map(EMO_RATING_TO_INT)
     complete["present"] = (complete["rating_int"] > 0).astype(int)
 
-    agreement = emo_agreement(complete) if len(complete) else {
+    agreement = emo_agreement(complete, cleaned) if len(complete) else {
         "exact_3way_ordinal": float("nan"),
         "exact_3way_binary": float("nan"),
         "pairwise_exact_binary": float("nan"),
@@ -420,6 +540,11 @@ def run_emo(out_dir: Path) -> dict[str, Any]:
         "pairwise_binary_kappa": {"mean": float("nan")},
         "fleiss_ordinal_kappa": float("nan"),
         "fleiss_binary_kappa": float("nan"),
+        "human_pairwise_accuracy": float("nan"),
+        "human_pairwise_balanced_accuracy": float("nan"),
+        "human_loo_accuracy": float("nan"),
+        "human_loo_balanced_accuracy": float("nan"),
+        "human_loo_n_annotations": 0.0,
     }
     labels = build_emo_labels(cleaned)
     labels = append_n_raters(labels, cleaned, EMO_ITEM_KEYS)
@@ -449,7 +574,13 @@ def run_emo(out_dir: Path) -> dict[str, Any]:
         "task_types": per_task.to_dict(orient="records"),
         "easiest_emotions": per_emotion.tail(5).to_dict(orient="records"),
         "hardest_emotions": per_emotion.head(5).to_dict(orient="records"),
+        # Aliases used by benchmark.py to print the score rubric.
         "human_upper_bound_binary": agreement["pairwise_exact_binary"],
+        "human_accuracy_binary": agreement["human_pairwise_accuracy"],
+        "human_balanced_accuracy_binary": agreement["human_pairwise_balanced_accuracy"],
+        "human_loo_accuracy_binary": agreement["human_loo_accuracy"],
+        "human_loo_balanced_accuracy_binary": agreement["human_loo_balanced_accuracy"],
+        "human_loo_n_annotations": agreement["human_loo_n_annotations"],
     }
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2))
     return {
@@ -470,20 +601,38 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
     cleaned["rating_int"] = cleaned["rating"].map(DIM_RATING_TO_INT)
     complete["rating_int"] = complete["rating"].map(DIM_RATING_TO_INT)
 
-    if len(complete):
-        agreement = dim_agreement(complete)
-    else:
-        agreement = {
-            "exact_3way_binary": float("nan"),
-            "pairwise_exact_binary": float("nan"),
-            "pairwise_binary_kappa": {"mean": float("nan")},
-            "fleiss_binary_kappa": float("nan"),
-        }
+    agreement = dim_agreement(complete, cleaned) if len(cleaned) else {
+        "exact_3way_binary": float("nan"),
+        "pairwise_exact_binary": float("nan"),
+        "pairwise_binary_kappa": {"mean": float("nan")},
+        "fleiss_binary_kappa": float("nan"),
+        "human_pairwise_accuracy": float("nan"),
+        "human_pairwise_balanced_accuracy": float("nan"),
+        "human_loo_accuracy": float("nan"),
+        "human_loo_balanced_accuracy": float("nan"),
+        "human_loo_n_annotations": 0.0,
+    }
     labels = build_dim_labels(cleaned)
     labels = append_n_raters(labels, cleaned, DIM_ITEM_KEYS)
     per_dim = dim_per_dimension(labels)
     per_pol = dim_per_polarity(labels)
     incomplete = incomplete_items(cleaned, DIM_ITEM_KEYS, required=3)
+
+    flags_path = ANNOTATIONS_ROOT / "emolia-dim" / "flags.csv"
+    flags = pd.read_csv(flags_path) if flags_path.exists() else pd.DataFrame(
+        columns=DIM_ITEM_KEYS + ["username", "reason", "created_at"]
+    )
+    if len(flags):
+        flag_keys = flags[DIM_ITEM_KEYS].drop_duplicates().astype({"level": str})
+        labels_for_merge = labels.copy()
+        labels_for_merge["level"] = labels_for_merge["level"].astype(str)
+        merged = labels_for_merge.merge(
+            flag_keys.assign(flagged=True), on=DIM_ITEM_KEYS, how="left"
+        )
+        labels["flagged"] = merged["flagged"].fillna(False).astype(bool).to_numpy()
+        flags.to_csv(out_dir / "flags.csv", index=False)
+    else:
+        labels["flagged"] = False
 
     labels.to_csv(out_dir / "benchmark_labels.csv", index=False)
     per_dim.to_csv(out_dir / "per_dimension_summary.csv", index=False)
@@ -491,6 +640,7 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
     incomplete.to_csv(out_dir / "incomplete_items.csv", index=False)
 
     coverage = labels["n_raters"].value_counts().sort_index().to_dict()
+    flag_records = flags.to_dict(orient="records") if len(flags) else []
     summary = {
         "subset": "emolia-dim",
         "rating_scale": DIM_RATING_ORDER,
@@ -499,6 +649,7 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
         "items_total": int(len(labels)),
         "items_complete": int(complete[DIM_ITEM_KEYS].drop_duplicates().shape[0]),
         "items_incomplete": int(len(incomplete)),
+        "items_flagged": int(labels["flagged"].sum()),
         "rater_coverage": {int(k): int(v) for k, v in coverage.items()},
         "annotators": users["username"].tolist(),
         "agreement": agreement,
@@ -506,7 +657,14 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
         "polarity_match_rate": float(labels["matches_intended_polarity"].mean()),
         "dimensions": per_dim.to_dict(orient="records"),
         "polarities": per_pol.to_dict(orient="records"),
+        "flags": flag_records,
+        # Aliases used by benchmark.py to print the score rubric.
         "human_upper_bound_binary": agreement["pairwise_exact_binary"],
+        "human_accuracy_binary": agreement["human_pairwise_accuracy"],
+        "human_balanced_accuracy_binary": agreement["human_pairwise_balanced_accuracy"],
+        "human_loo_accuracy_binary": agreement["human_loo_accuracy"],
+        "human_loo_balanced_accuracy_binary": agreement["human_loo_balanced_accuracy"],
+        "human_loo_n_annotations": agreement["human_loo_n_annotations"],
     }
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2))
     return {
@@ -517,6 +675,7 @@ def run_dim(out_dir: Path) -> dict[str, Any]:
         "users": users,
         "incomplete": incomplete,
         "agreement": agreement,
+        "flags": flags,
     }
 
 
@@ -554,6 +713,19 @@ def render_emo_section(res: dict[str, Any]) -> list[str]:
         f"| Mean pairwise exact agreement | {fmt(a['pairwise_exact_ordinal'])} | {fmt(a['pairwise_exact_binary'])} |",
         f"| Mean pairwise Cohen's kappa | {fmt(a['pairwise_ordinal_kappa']['mean'])} | {fmt(a['pairwise_binary_kappa']['mean'])} |",
         f"| Fleiss' kappa | {fmt(a['fleiss_ordinal_kappa'])} | {fmt(a['fleiss_binary_kappa'])} |",
+        "",
+        "### Human upper bound (binary task)",
+        "",
+        "These are the numbers to compare a CLAP-style model's accuracy / "
+        "balanced accuracy against.",
+        "",
+        "| Metric | Value |",
+        "|---|---|",
+        f"| Pairwise human accuracy | {fmt(a['human_pairwise_accuracy'])} |",
+        f"| Pairwise human balanced accuracy | {fmt(a['human_pairwise_balanced_accuracy'])} |",
+        f"| Leave-one-out human accuracy | {fmt(a['human_loo_accuracy'])} |",
+        f"| Leave-one-out human balanced accuracy | {fmt(a['human_loo_balanced_accuracy'])} |",
+        f"| LOO comparisons used | {int(a.get('human_loo_n_annotations') or 0)} |",
         "",
         "### Per-task summary",
         "",
@@ -609,6 +781,9 @@ def render_dim_section(res: dict[str, Any]) -> list[str]:
         f"- Raw annotations: **{s['rows_raw']}** (deduplicated: {s['rows_deduplicated']})",
         f"- Items total: **{s['items_total']}** ({coverage_str})",
         f"- Complete 3-rater items: **{s['items_complete']}**",
+        f"- Items flagged for removal: **{s.get('items_flagged', 0)}** "
+        f"(see `flags.csv`; flagged items are kept in `benchmark_labels.csv` with "
+        "`flagged=true` so they can be filtered out at training time)",
         f"- Majority-yes rate: **{fmt(s['majority_yes_rate'])}**",
         f"- Preselection-confirmed rate (majority matched the polarity prior): "
         f"**{fmt(s['polarity_match_rate'])}**",
@@ -628,6 +803,19 @@ def render_dim_section(res: dict[str, Any]) -> list[str]:
         f"| Mean pairwise exact agreement | {fmt(a['pairwise_exact_binary'])} |",
         f"| Mean pairwise Cohen's kappa | {fmt(a['pairwise_binary_kappa']['mean'])} |",
         f"| Fleiss' kappa | {fmt(a['fleiss_binary_kappa'])} |",
+        "",
+        "### Human upper bound (binary task)",
+        "",
+        "These are the numbers to compare a CLAP-style model's accuracy / "
+        "balanced accuracy against.",
+        "",
+        "| Metric | Value |",
+        "|---|---|",
+        f"| Pairwise human accuracy | {fmt(a['human_pairwise_accuracy'])} |",
+        f"| Pairwise human balanced accuracy | {fmt(a['human_pairwise_balanced_accuracy'])} |",
+        f"| Leave-one-out human accuracy | {fmt(a['human_loo_accuracy'])} |",
+        f"| Leave-one-out human balanced accuracy | {fmt(a['human_loo_balanced_accuracy'])} |",
+        f"| LOO comparisons used | {int(a.get('human_loo_n_annotations') or 0)} |",
         "",
         "### Per-polarity summary",
         "",
@@ -652,6 +840,25 @@ def render_dim_section(res: dict[str, Any]) -> list[str]:
             f"{fmt(row.majority_yes_rate)} | {fmt(row.unanimous_rate)} | "
             f"{fmt(row.polarity_match_rate)} |"
         )
+    flags = res.get("flags")
+    if flags is not None and len(flags):
+        lines.extend([
+            "",
+            "### Annotator-flagged items",
+            "",
+            f"{len(flags)} items have been flagged by an annotator with a reason "
+            "(typically silence / no speech). They remain in `benchmark_labels.csv` "
+            "but are tagged `flagged=true` so the model trainer can exclude them.",
+            "",
+            "| flagger | dimension | level | polarity | file_name | reason |",
+            "|---|---|---|---|---|---|",
+        ])
+        for row in flags.itertuples(index=False):
+            reason = str(getattr(row, "reason", "")).replace("|", "/")
+            lines.append(
+                f"| {row.username} | {row.dimension} | {row.level} | "
+                f"{row.polarity} | {row.file_name} | {reason} |"
+            )
     lines.append("")
     return lines
 
@@ -682,12 +889,41 @@ def render_demographics(emo_users: pd.DataFrame, dim_users: pd.DataFrame) -> lis
     return lines
 
 
+def _human_bound_rows(subset_name: str, agreement: dict[str, Any]) -> str:
+    return (
+        f"| {subset_name} | "
+        f"{fmt(agreement['human_pairwise_accuracy'])} | "
+        f"{fmt(agreement['human_pairwise_balanced_accuracy'])} | "
+        f"{fmt(agreement['human_loo_accuracy'])} | "
+        f"{fmt(agreement['human_loo_balanced_accuracy'])} | "
+        f"{int(agreement.get('human_loo_n_annotations') or 0)} |"
+    )
+
+
 def render_combined_report(emo: dict[str, Any], dim: dict[str, Any]) -> str:
     lines = [
         "# EmoLia annotation analysis",
         "",
         "Auto-generated by `analysis.py`. Numbers here are paper-ready: counts,",
         "agreement statistics, and per-slice summaries for both subsets.",
+        "",
+        "## Human upper bound (compare your model's accuracy to these)",
+        "",
+        "Binary task: \"is the queried emotion / dimension present in this clip?\"",
+        "Random baseline = 0.500. The numbers below are how good a single human",
+        "is at the same task; they are the natural ceiling for a CLAP-style",
+        "model trained against `majority_present`.",
+        "",
+        "- **Pairwise** = each rater pair scored against each other on items",
+        "  they both rated.",
+        "- **Leave-one-out (LOO)** = each annotation scored against the",
+        "  majority of the *other* raters on that item. This is the cleanest",
+        "  human-vs-consensus number.",
+        "",
+        "| Subset | Pairwise accuracy | Pairwise balanced acc. | LOO accuracy | LOO balanced acc. | LOO n |",
+        "|---|---:|---:|---:|---:|---:|",
+        _human_bound_rows("emolia-emo", emo["agreement"]),
+        _human_bound_rows("emolia-dim", dim["agreement"]),
         "",
         "## Quick stats",
         "",

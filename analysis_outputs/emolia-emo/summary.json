@@ -38,7 +38,12 @@
       "mean": 0.11304279068101891
     },
     "fleiss_ordinal_kappa": 0.05835491701332644,
-    "fleiss_binary_kappa": 0.08600314367115888
+    "fleiss_binary_kappa": 0.08600314367115888,
+    "human_pairwise_accuracy": 0.551475843567745,
+    "human_pairwise_balanced_accuracy": 0.5623089244740638,
+    "human_loo_accuracy": 0.5932768019382193,
+    "human_loo_balanced_accuracy": 0.5718007365530084,
+    "human_loo_n_annotations": 13208.0
   },
   "majority_present_rate": 0.5779919879819729,
   "preselection_confirm_rate": 0.7109414121181773,
@@ -163,5 +168,10 @@
       "unanimous_ordinal_rate": 0.15873015873015872
     }
   ],
-  "human_upper_bound_binary": 0.551436205744823
+  "human_upper_bound_binary": 0.551436205744823,
+  "human_accuracy_binary": 0.551475843567745,
+  "human_balanced_accuracy_binary": 0.5623089244740638,
+  "human_loo_accuracy_binary": 0.5932768019382193,
+  "human_loo_balanced_accuracy_binary": 0.5718007365530084,
+  "human_loo_n_annotations": 13208.0
 }

@@ -31,8 +31,12 @@ OUT_ROOT = Path("annotations")
 SUBSETS = ("emolia-emo", "emolia-dim")
 
 
-def build_username_map(users_df: pd.DataFrame, annotations_df: pd.DataFrame) -> dict[str, str]:
-    usernames = set(users_df["username"].astype(str)) | set(annotations_df["username"].astype(str))
+def build_username_map(*frames: pd.DataFrame) -> dict[str, str]:
+    usernames: set[str] = set()
+    for frame in frames:
+        if frame is None or "username" not in frame.columns:
+            continue
+        usernames |= set(frame["username"].dropna().astype(str))
     ordered = sorted(usernames)
     return {raw: f"user_{i}" for i, raw in enumerate(ordered)}
 
@@ -44,14 +48,22 @@ def anonymize_subset(subset: str, raw_root: Path, out_root: Path) -> dict[str, i
 
     annotations = pd.read_csv(raw_dir / "annotations.csv")
     users = pd.read_csv(raw_dir / "users.csv")
+    flags_path = raw_dir / "flags.csv"
+    flags = pd.read_csv(flags_path) if flags_path.exists() else None
 
-    mapping = build_username_map(users, annotations)
+    mapping = build_username_map(users, annotations, flags)
     annotations["username"] = annotations["username"].map(mapping)
     users["username"] = users["username"].map(mapping)
     users = users.sort_values("username").reset_index(drop=True)
 
     annotations.to_csv(out_dir / "annotations.csv", index=False)
     users.to_csv(out_dir / "users.csv", index=False)
+
+    flag_count = 0
+    if flags is not None:
+        flags["username"] = flags["username"].map(mapping)
+        flags.to_csv(out_dir / "flags.csv", index=False)
+        flag_count = len(flags)
 
     mapping_path = raw_dir / "_anon_map.csv"
     pd.DataFrame(
@@ -62,6 +74,7 @@ def anonymize_subset(subset: str, raw_root: Path, out_root: Path) -> dict[str, i
         "annotators": len(mapping),
         "annotations": len(annotations),
         "users": len(users),
+        "flags": flag_count,
     }
 
 
@@ -77,6 +90,7 @@ def main() -> None:
         print(
             f"[{subset}] annotators={stats['annotators']} "
             f"annotations={stats['annotations']} users={stats['users']} "
+            f"flags={stats['flags']} "
             f"-> {(args.out_root / subset).resolve()}"
         )
 
