@@ -1,9 +1,9 @@
 username,is_active,is_admin,onboarded,annotation_count,created_at,age,gender,languages,listening_setup,degree,consent,expertise
-user_0,1,0,True,12334,2026-04-28T21:30:36.460Z,26,Female,"English,Spanish,Serbian",Headphones (on-ear),"Bachelor's degree in Psychology, Master's degree in Clinical and Counseling Psychology",True,5
-user_1,1,0,True,72,2026-05-04T11:37:01.833Z,27,Male,"English,Arabic",Headphones (over-ear),Bachelor of Laws (LL.B.) – Faculty of Law,True,4
-user_2,1,0,True,200,2026-05-03T15:22:57.033Z,19,Female,"English,German,Persian",Laptop speakers,B.Sc. Computer Science ,True,0
-user_3,1,0,True,3028,2026-04-28T22:43:00.945Z,33,Female,"English,Hindi",External speakers,Ms clinical psychology ,True,6
-user_4,1,0,True,66,2026-05-04T11:25:28.745Z,40,Female,English,Headphones (over-ear),Translation,True,0
-user_5,1,0,True,1008,2026-04-28T20:19:25.021Z,33,Male,"Spanish,English,Italian,French",Earbuds (wireless/ANC),Clinical psychology ,True,5
-user_6,1,0,True,1478,2026-05-03T15:22:01.960Z,29,Female,"English,Hindi,Punjabi,Urdu",Headphones (on-ear),BS Psychology ,True,9
+user_0,1,0,True,17641,2026-04-28T21:30:36.460Z,26,Female,"English,Spanish,Serbian",Headphones (on-ear),"Bachelor's degree in Psychology, Master's degree in Clinical and Counseling Psychology",True,5
+user_1,1,0,True,510,2026-05-04T11:37:01.833Z,27,Male,"English,Arabic",Headphones (over-ear),Bachelor of Laws (LL.B.) – Faculty of Law,True,4
+user_2,1,0,True,354,2026-05-03T15:22:57.033Z,19,Female,"English,German,Persian",Laptop speakers,B.Sc. Computer Science ,True,0
+user_3,1,0,True,5233,2026-04-28T22:43:00.945Z,33,Female,"English,Hindi",External speakers,Ms clinical psychology ,True,6
+user_4,1,0,True,429,2026-05-04T11:25:28.745Z,40,Female,English,Headphones (over-ear),Translation,True,0
+user_5,1,0,True,2360,2026-04-28T20:19:25.021Z,33,Male,"Spanish,English,Italian,French",Earbuds (wireless/ANC),Clinical psychology ,True,5
+user_6,1,0,True,4145,2026-05-03T15:22:01.960Z,29,Female,"English,Hindi,Punjabi,Urdu",Headphones (on-ear),BS Psychology ,True,9
 user_8,1,0,True,125,2026-05-03T21:21:21.750Z,21,Male,"English,German",Headphones (over-ear),Environmental science but no degree yet,True,0

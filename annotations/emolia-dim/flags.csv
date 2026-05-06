@@ -1,4 +1,26 @@
 flag_id,username,dimension,level,polarity,file_name,reason,created_at
+827f324f-83db-4cd3-b2ab-60431121ec8e,user_1,STNC,2,positive,sample_01.mp3,3 speakers,2026-05-06 11:04:05
+bc5a9ef3-6f69-4def-82d3-4ae6edf31f7a,user_1,R_HEAD,0,negative,sample_02.mp3,"3 speakers, the description matches the first speaker (the woman)",2026-05-06 10:41:59
+b2321077-07c0-49ab-9d0e-41edf747d98b,user_1,R_ORAL,0,positive,sample_07.mp3,Not speech it is mumbling,2026-05-06 10:25:06
+06d08215-8536-4b51-b28a-32875e187d2d,user_2,CLRT,1,positive,sample_22.mp3,weird noises,2026-05-05 22:47:31
+d4c8672b-eafa-49f0-8b74-76eff06fa741,user_1,HARM,2,positive,sample_17.mp3,"No Speech, music only.",2026-05-05 19:57:50
+9560d55f-f605-462a-9eec-fbc42719966a,user_1,S_RANT,2,positive,sample_00.mp3,"2 speakers, one fits the description and the other doesn't",2026-05-05 19:44:32
+d47fe9d6-3f02-4cd1-baa2-f0b5b239458d,user_1,R_HEAD,0,positive,sample_19.mp3,I hear no one speaking,2026-05-05 19:41:15
+abe7ee9d-8be6-47a2-b14c-e61ae1af0651,user_1,S_CART,4,positive,sample_08.mp3,No speech,2026-05-05 19:24:04
+5122b79f-c324-41ad-b175-5222c465a3dd,user_1,SMTH,0,positive,sample_18.mp3,"Mumbling, no speech",2026-05-05 19:13:40
+765954c9-23c7-4a30-991e-2a064f102272,user_1,FOCS,6,negative,sample_18.mp3,No speech in the audio,2026-05-05 18:34:25
+ec2295c1-a895-47d1-a056-d17c01990ada,user_1,VOLT,6,positive,sample_05.mp3,2 speakers,2026-05-05 13:45:25
+d66963ed-db8c-42bc-bfa4-842b23c66a93,user_1,VFLX,0,positive,sample_20.mp3,it is only music,2026-05-05 13:15:02
+88c884e0-9e42-4118-8b69-0236ea9120b2,user_1,DFLU,6,positive,sample_04.mp3,NSFW content: Sexual material,2026-05-05 12:55:50
+2e92f0fd-6af5-490b-a77b-0cc5f93ea2fe,user_1,BKGN,1,positive,sample_17.mp3,No audio at all,2026-05-04 22:24:15
+0db0a4f2-9fa9-4960-b1fe-0ba0503f01af,user_1,VALN,5,negative,sample_16.mp3,No speech,2026-05-04 22:09:22
+0c541f37-bba7-4ec5-a1ed-7109575c5dce,user_1,ARSH,3,positive,sample_19.mp3,No Audio,2026-05-04 21:57:49
+6efe3d1a-8e45-498f-97f8-23f23d3b521b,user_1,R_NASL,3,positive,sample_18.mp3,"No speech only ""mhmmm""",2026-05-04 21:57:10
+c064bfe6-2ef5-4105-a2b2-b3d631755c38,user_1,REGS,5,positive,sample_02.mp3,"2 speakers, don't know which one is described",2026-05-04 21:55:14
+1b3bac5c-8d6a-4a4e-a35a-5560086c9070,user_1,VFLX,3,negative,sample_05.mp3,2 speakers I don't know the description about whom,2026-05-04 21:33:13
+32338542-34c0-4474-a8a4-f0ec25760374,user_1,BRGT,1,positive,sample_09.mp3,No one is speaking it is breathing noise,2026-05-04 21:13:25
+7e3deb2d-c4e5-4615-a46c-8003f9849914,user_1,RESP,4,positive,sample_18.mp3,"No speech, heavy breathing only",2026-05-04 20:39:28
+57a4a545-7821-46ac-9c18-8f7cfbf39a8e,user_1,EMPH,0,negative,sample_11.mp3,"No speech, sexual noise only",2026-05-04 20:34:39
 bf1c2c21-cbc9-400f-b0d1-2aadf5b930c8,user_2,ESTH,0,positive,sample_07.mp3,weird noises,2026-05-04 18:13:52
 c689f639-dafd-4b42-9050-ab4ec17a0f57,user_2,R_HEAD,4,positive,sample_20.mp3,weird noise,2026-05-04 17:57:54
 d8f1fcb7-07e7-4fc1-b6e0-eb9dcba54b3d,user_0,ROUG,1,positive,sample_00.mp3,"absolute silence, should be removed",2026-04-30 19:14:04

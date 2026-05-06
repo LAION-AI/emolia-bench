@@ -4,17 +4,17 @@
     "no",
     "yes"
   ],
-  "rows_raw": 18311,
-  "rows_deduplicated": 18311,
-  "items_total": 15428,
-  "items_complete": 116,
-  "items_incomplete": 15312,
-  "items_flagged": 10,
+  "rows_raw": 30798,
+  "rows_deduplicated": 30798,
+  "items_total": 18632,
+  "items_complete": 868,
+  "items_incomplete": 17764,
+  "items_flagged": 33,
   "rater_coverage": {
-    "1": 12669,
-    "2": 2639,
-    "3": 116,
-    "4": 4
+    "1": 7400,
+    "2": 10331,
+    "3": 868,
+    "4": 33
   },
   "annotators": [
     "user_0",
@@ -27,470 +27,703 @@
     "user_8"
   ],
   "agreement": {
-    "exact_3way_binary": 0.22413793103448276,
-    "pairwise_exact_binary": 0.09655172413793103,
+    "exact_3way_binary": 0.2557603686635945,
+    "pairwise_exact_binary": 0.05398288347597102,
     "pairwise_binary_kappa": {
-      "user_0__user_2": 0.0,
-      "user_0__user_3": -0.09352517985611511,
-      "user_0__user_5": -0.05660377358490571,
-      "user_0__user_6": 0.10125486802250111,
-      "user_0__user_8": 0.0,
-      "user_2__user_3": NaN,
-      "user_2__user_5": NaN,
-      "user_2__user_6": 0.0,
+      "user_0__user_1": 0.27325581395348836,
+      "user_0__user_2": 0.10526315789473695,
+      "user_0__user_3": 0.024090029892737883,
+      "user_0__user_4": -0.10062893081761,
+      "user_0__user_5": 0.038221852928957155,
+      "user_0__user_6": -0.014984950219958423,
+      "user_0__user_8": 0.309623430962343,
+      "user_1__user_2": NaN,
+      "user_1__user_3": 0.608695652173913,
+      "user_1__user_4": NaN,
+      "user_1__user_5": 0.0,
+      "user_1__user_6": 0.39999999999999997,
+      "user_1__user_8": NaN,
+      "user_2__user_3": 0.04469273743016761,
+      "user_2__user_4": NaN,
+      "user_2__user_5": 0.5263157894736842,
+      "user_2__user_6": -0.36363636363636376,
       "user_2__user_8": NaN,
-      "user_3__user_5": -0.14184397163120568,
-      "user_3__user_6": 0.014778325123152903,
-      "user_3__user_8": 0.0,
-      "user_5__user_6": 0.16783216783216792,
-      "user_5__user_8": 0.0,
-      "user_6__user_8": NaN,
-      "mean": -0.0007370512813095046
+      "user_3__user_4": -0.25316455696202544,
+      "user_3__user_5": -0.05989430416911336,
+      "user_3__user_6": 0.0004247727465804789,
+      "user_3__user_8": 0.05555555555555552,
+      "user_4__user_5": 0.0,
+      "user_4__user_6": NaN,
+      "user_4__user_8": NaN,
+      "user_5__user_6": 0.18255372945638434,
+      "user_5__user_8": -0.4285714285714287,
+      "user_6__user_8": -0.1666666666666665,
+      "mean": 0.05624501530597058
     },
-    "fleiss_binary_kappa": -0.04222821203953302,
-    "human_pairwise_accuracy": 0.4974801982744457,
-    "human_pairwise_balanced_accuracy": 0.5114848261606935,
-    "human_loo_accuracy": 0.45652173913043476,
-    "human_loo_balanced_accuracy": 0.45260347129506007,
-    "human_loo_n_annotations": 184.0
+    "fleiss_binary_kappa": -0.0006787452789724964,
+    "human_pairwise_accuracy": 0.5545603970882631,
+    "human_pairwise_balanced_accuracy": 0.5358498954475968,
+    "human_loo_accuracy": 0.5090027700831025,
+    "human_loo_balanced_accuracy": 0.5028146051558987,
+    "human_loo_n_annotations": 1444.0
   },
   "augmented_agreement": {
-    "preselection_pairwise_accuracy": 0.5227188596549753,
-    "preselection_pairwise_balanced_accuracy": 0.5363920220109825,
-    "preselection_loo_accuracy": 0.5875542691751086,
-    "preselection_loo_balanced_accuracy": 0.5841392129527723,
-    "preselection_loo_n_annotations": 4837.0,
+    "preselection_pairwise_accuracy": 0.5654036254915625,
+    "preselection_pairwise_balanced_accuracy": 0.5535790182948477,
+    "preselection_loo_accuracy": 0.5928595454327038,
+    "preselection_loo_balanced_accuracy": 0.5913109170873097,
+    "preselection_loo_n_annotations": 20811.0,
     "preselection_fleiss_kappa": NaN,
     "preselection_n_full_coverage_items": 0,
-    "gemini_vs_human_consensus_accuracy": 0.6517482517482518,
-    "gemini_vs_human_consensus_balanced_accuracy": 0.6597073618528373,
-    "gemini_vs_human_consensus_n_items": 1430.0
+    "gemini_vs_human_consensus_accuracy": 0.6604743738596782,
+    "gemini_vs_human_consensus_balanced_accuracy": 0.6723684745341535,
+    "gemini_vs_human_consensus_n_items": 6029.0
   },
-  "majority_yes_rate": 0.32544723878662174,
-  "polarity_match_rate": 0.612328234379051,
+  "majority_yes_rate": 0.2549377415199657,
+  "polarity_match_rate": 0.6060004293688278,
   "dimensions": [
     {
       "dimension": "REGS",
-      "items": 299,
-      "majority_yes_rate": 0.25752508361204013,
-      "unanimous_rate": 0.056856187290969896,
-      "polarity_match_rate": 0.5986622073578596
-    },
-    {
-      "dimension": "DFLU",
-      "items": 297,
-      "majority_yes_rate": 0.3468013468013468,
-      "unanimous_rate": 0.10101010101010101,
-      "polarity_match_rate": 0.6531986531986532
-    },
-    {
-      "dimension": "ARSH",
-      "items": 295,
-      "majority_yes_rate": 0.2542372881355932,
-      "unanimous_rate": 0.06440677966101695,
-      "polarity_match_rate": 0.6169491525423729
-    },
-    {
-      "dimension": "S_RANT",
-      "items": 295,
-      "majority_yes_rate": 0.3389830508474576,
-      "unanimous_rate": 0.08813559322033898,
-      "polarity_match_rate": 0.6372881355932203
-    },
-    {
-      "dimension": "S_DRAM",
-      "items": 294,
-      "majority_yes_rate": 0.30612244897959184,
-      "unanimous_rate": 0.08503401360544217,
-      "polarity_match_rate": 0.6360544217687075
-    },
-    {
-      "dimension": "GEND",
-      "items": 294,
-      "majority_yes_rate": 0.2857142857142857,
-      "unanimous_rate": 0.07482993197278912,
-      "polarity_match_rate": 0.6360544217687075
+      "items": 350,
+      "majority_yes_rate": 0.18285714285714286,
+      "unanimous_rate": 0.26285714285714284,
+      "polarity_match_rate": 0.5857142857142857
     },
     {
       "dimension": "VULN",
-      "items": 291,
-      "majority_yes_rate": 0.3539518900343643,
-      "unanimous_rate": 0.09278350515463918,
-      "polarity_match_rate": 0.5807560137457045
+      "items": 350,
+      "majority_yes_rate": 0.28285714285714286,
+      "unanimous_rate": 0.30857142857142855,
+      "polarity_match_rate": 0.5771428571428572
     },
     {
-      "dimension": "CLRT",
-      "items": 290,
-      "majority_yes_rate": 0.35517241379310344,
-      "unanimous_rate": 0.0896551724137931,
-      "polarity_match_rate": 0.6137931034482759
-    },
-    {
-      "dimension": "S_FORM",
-      "items": 288,
-      "majority_yes_rate": 0.3680555555555556,
-      "unanimous_rate": 0.059027777777777776,
-      "polarity_match_rate": 0.6944444444444444
-    },
-    {
-      "dimension": "AGEV",
-      "items": 288,
-      "majority_yes_rate": 0.3263888888888889,
-      "unanimous_rate": 0.059027777777777776,
-      "polarity_match_rate": 0.6180555555555556
-    },
-    {
-      "dimension": "S_WHIS",
-      "items": 287,
-      "majority_yes_rate": 0.2961672473867596,
-      "unanimous_rate": 0.09059233449477352,
-      "polarity_match_rate": 0.6306620209059234
-    },
-    {
-      "dimension": "S_MONO",
-      "items": 286,
-      "majority_yes_rate": 0.3916083916083916,
-      "unanimous_rate": 0.12237762237762238,
-      "polarity_match_rate": 0.6433566433566433
-    },
-    {
-      "dimension": "AROU",
-      "items": 286,
-      "majority_yes_rate": 0.3111888111888112,
-      "unanimous_rate": 0.07692307692307693,
-      "polarity_match_rate": 0.6188811188811189
-    },
-    {
-      "dimension": "R_MASK",
-      "items": 285,
-      "majority_yes_rate": 0.312280701754386,
-      "unanimous_rate": 0.11929824561403508,
-      "polarity_match_rate": 0.5719298245614035
-    },
-    {
-      "dimension": "S_PLAY",
-      "items": 284,
-      "majority_yes_rate": 0.31338028169014087,
-      "unanimous_rate": 0.07394366197183098,
-      "polarity_match_rate": 0.6443661971830986
-    },
-    {
-      "dimension": "FOCS",
-      "items": 284,
-      "majority_yes_rate": 0.3028169014084507,
-      "unanimous_rate": 0.04929577464788732,
-      "polarity_match_rate": 0.5563380281690141
-    },
-    {
-      "dimension": "S_AUTH",
-      "items": 281,
-      "majority_yes_rate": 0.3274021352313167,
-      "unanimous_rate": 0.11387900355871886,
-      "polarity_match_rate": 0.6690391459074733
-    },
-    {
-      "dimension": "DARC",
-      "items": 281,
-      "majority_yes_rate": 0.23843416370106763,
-      "unanimous_rate": 0.10676156583629894,
-      "polarity_match_rate": 0.5836298932384342
-    },
-    {
-      "dimension": "S_NEWS",
-      "items": 281,
-      "majority_yes_rate": 0.3701067615658363,
-      "unanimous_rate": 0.11387900355871886,
-      "polarity_match_rate": 0.6548042704626335
-    },
-    {
-      "dimension": "RESP",
-      "items": 280,
-      "majority_yes_rate": 0.3535714285714286,
-      "unanimous_rate": 0.08214285714285714,
-      "polarity_match_rate": 0.6785714285714286
-    },
-    {
-      "dimension": "VFLX",
-      "items": 280,
-      "majority_yes_rate": 0.18214285714285713,
-      "unanimous_rate": 0.08928571428571429,
-      "polarity_match_rate": 0.5535714285714286
-    },
-    {
-      "dimension": "R_THRT",
-      "items": 280,
-      "majority_yes_rate": 0.32142857142857145,
-      "unanimous_rate": 0.07142857142857142,
-      "polarity_match_rate": 0.6071428571428571
-    },
-    {
-      "dimension": "S_CART",
-      "items": 279,
-      "majority_yes_rate": 0.34050179211469533,
-      "unanimous_rate": 0.07168458781362007,
-      "polarity_match_rate": 0.6881720430107527
-    },
-    {
-      "dimension": "R_HEAD",
-      "items": 278,
-      "majority_yes_rate": 0.26258992805755393,
-      "unanimous_rate": 0.09712230215827339,
-      "polarity_match_rate": 0.5827338129496403
-    },
-    {
-      "dimension": "VOLT",
-      "items": 278,
-      "majority_yes_rate": 0.36330935251798563,
-      "unanimous_rate": 0.09712230215827339,
-      "polarity_match_rate": 0.6079136690647482
-    },
-    {
-      "dimension": "S_NARR",
-      "items": 277,
-      "majority_yes_rate": 0.35018050541516244,
-      "unanimous_rate": 0.08303249097472924,
-      "polarity_match_rate": 0.6389891696750902
-    },
-    {
-      "dimension": "VALN",
-      "items": 277,
-      "majority_yes_rate": 0.34657039711191334,
-      "unanimous_rate": 0.07220216606498195,
-      "polarity_match_rate": 0.6462093862815884
+      "dimension": "ARSH",
+      "items": 350,
+      "majority_yes_rate": 0.19142857142857142,
+      "unanimous_rate": 0.31142857142857144,
+      "polarity_match_rate": 0.6114285714285714
     },
     {
       "dimension": "ATCK",
-      "items": 276,
-      "majority_yes_rate": 0.37681159420289856,
-      "unanimous_rate": 0.09057971014492754,
-      "polarity_match_rate": 0.6413043478260869
+      "items": 350,
+      "majority_yes_rate": 0.3485714285714286,
+      "unanimous_rate": 0.3457142857142857,
+      "polarity_match_rate": 0.6428571428571429
     },
     {
-      "dimension": "S_ASMR",
-      "items": 274,
-      "majority_yes_rate": 0.291970802919708,
-      "unanimous_rate": 0.0948905109489051,
-      "polarity_match_rate": 0.6496350364963503
+      "dimension": "S_MONO",
+      "items": 350,
+      "majority_yes_rate": 0.34,
+      "unanimous_rate": 0.3142857142857143,
+      "polarity_match_rate": 0.64
     },
     {
-      "dimension": "S_CONV",
-      "items": 274,
-      "majority_yes_rate": 0.3467153284671533,
-      "unanimous_rate": 0.09124087591240876,
-      "polarity_match_rate": 0.6642335766423357
+      "dimension": "S_DRAM",
+      "items": 350,
+      "majority_yes_rate": 0.24285714285714285,
+      "unanimous_rate": 0.2914285714285714,
+      "polarity_match_rate": 0.6228571428571429
     },
     {
-      "dimension": "R_MIXD",
-      "items": 273,
-      "majority_yes_rate": 0.304029304029304,
-      "unanimous_rate": 0.10256410256410256,
-      "polarity_match_rate": 0.5970695970695971
+      "dimension": "S_PLAY",
+      "items": 350,
+      "majority_yes_rate": 0.22285714285714286,
+      "unanimous_rate": 0.26857142857142857,
+      "polarity_match_rate": 0.62
     },
     {
-      "dimension": "R_CHST",
-      "items": 271,
-      "majority_yes_rate": 0.35793357933579334,
-      "unanimous_rate": 0.06273062730627306,
-      "polarity_match_rate": 0.5867158671586716
+      "dimension": "S_RANT",
+      "items": 350,
+      "majority_yes_rate": 0.26,
+      "unanimous_rate": 0.3,
+      "polarity_match_rate": 0.6514285714285715
+    },
+    {
+      "dimension": "S_WHIS",
+      "items": 350,
+      "majority_yes_rate": 0.26,
+      "unanimous_rate": 0.3,
+      "polarity_match_rate": 0.64
+    },
+    {
+      "dimension": "GEND",
+      "items": 350,
+      "majority_yes_rate": 0.19714285714285715,
+      "unanimous_rate": 0.2542857142857143,
+      "polarity_match_rate": 0.6342857142857142
+    },
+    {
+      "dimension": "VFLX",
+      "items": 350,
+      "majority_yes_rate": 0.12571428571428572,
+      "unanimous_rate": 0.29714285714285715,
+      "polarity_match_rate": 0.5514285714285714
+    },
+    {
+      "dimension": "AGEV",
+      "items": 349,
+      "majority_yes_rate": 0.2664756446991404,
+      "unanimous_rate": 0.28939828080229224,
+      "polarity_match_rate": 0.6045845272206304
+    },
+    {
+      "dimension": "S_CART",
+      "items": 347,
+      "majority_yes_rate": 0.2968299711815562,
+      "unanimous_rate": 0.3025936599423631,
+      "polarity_match_rate": 0.6714697406340058
+    },
+    {
+      "dimension": "RESP",
+      "items": 344,
+      "majority_yes_rate": 0.31976744186046513,
+      "unanimous_rate": 0.3168604651162791,
+      "polarity_match_rate": 0.6308139534883721
+    },
+    {
+      "dimension": "VALN",
+      "items": 343,
+      "majority_yes_rate": 0.27113702623906705,
+      "unanimous_rate": 0.2944606413994169,
+      "polarity_match_rate": 0.6326530612244898
+    },
+    {
+      "dimension": "AROU",
+      "items": 343,
+      "majority_yes_rate": 0.22448979591836735,
+      "unanimous_rate": 0.2915451895043732,
+      "polarity_match_rate": 0.60932944606414
     },
     {
       "dimension": "STNC",
-      "items": 270,
-      "majority_yes_rate": 0.37777777777777777,
-      "unanimous_rate": 0.1037037037037037,
-      "polarity_match_rate": 0.6962962962962963
+      "items": 342,
+      "majority_yes_rate": 0.32748538011695905,
+      "unanimous_rate": 0.30116959064327486,
+      "polarity_match_rate": 0.6929824561403509
     },
     {
-      "dimension": "TEMP",
-      "items": 269,
-      "majority_yes_rate": 0.2862453531598513,
-      "unanimous_rate": 0.08921933085501858,
-      "polarity_match_rate": 0.5576208178438662
+      "dimension": "S_FORM",
+      "items": 342,
+      "majority_yes_rate": 0.30994152046783624,
+      "unanimous_rate": 0.26900584795321636,
+      "polarity_match_rate": 0.6929824561403509
     },
     {
-      "dimension": "VALS",
-      "items": 267,
-      "majority_yes_rate": 0.24344569288389514,
-      "unanimous_rate": 0.08239700374531835,
-      "polarity_match_rate": 0.5543071161048689
+      "dimension": "FOCS",
+      "items": 341,
+      "majority_yes_rate": 0.21407624633431085,
+      "unanimous_rate": 0.23460410557184752,
+      "polarity_match_rate": 0.5483870967741935
+    },
+    {
+      "dimension": "DFLU",
+      "items": 340,
+      "majority_yes_rate": 0.3,
+      "unanimous_rate": 0.3235294117647059,
+      "polarity_match_rate": 0.6558823529411765
+    },
+    {
+      "dimension": "S_NEWS",
+      "items": 340,
+      "majority_yes_rate": 0.31176470588235294,
+      "unanimous_rate": 0.3411764705882353,
+      "polarity_match_rate": 0.6617647058823529
+    },
+    {
+      "dimension": "R_HEAD",
+      "items": 340,
+      "majority_yes_rate": 0.21764705882352942,
+      "unanimous_rate": 0.2911764705882353,
+      "polarity_match_rate": 0.5441176470588235
+    },
+    {
+      "dimension": "S_AUTH",
+      "items": 338,
+      "majority_yes_rate": 0.27218934911242604,
+      "unanimous_rate": 0.28402366863905326,
+      "polarity_match_rate": 0.6775147928994083
+    },
+    {
+      "dimension": "R_THRT",
+      "items": 336,
+      "majority_yes_rate": 0.24107142857142858,
+      "unanimous_rate": 0.26785714285714285,
+      "polarity_match_rate": 0.6071428571428571
     },
     {
       "dimension": "S_STRY",
-      "items": 267,
-      "majority_yes_rate": 0.3895131086142322,
-      "unanimous_rate": 0.08239700374531835,
-      "polarity_match_rate": 0.6704119850187266
+      "items": 335,
+      "majority_yes_rate": 0.3074626865671642,
+      "unanimous_rate": 0.31044776119402984,
+      "polarity_match_rate": 0.6686567164179105
     },
     {
-      "dimension": "METL",
-      "items": 267,
-      "majority_yes_rate": 0.2696629213483146,
-      "unanimous_rate": 0.10861423220973783,
-      "polarity_match_rate": 0.5617977528089888
+      "dimension": "S_ASMR",
+      "items": 333,
+      "majority_yes_rate": 0.23423423423423423,
+      "unanimous_rate": 0.32432432432432434,
+      "polarity_match_rate": 0.6336336336336337
     },
     {
-      "dimension": "HARM",
-      "items": 266,
-      "majority_yes_rate": 0.2631578947368421,
-      "unanimous_rate": 0.08646616541353383,
-      "polarity_match_rate": 0.5300751879699248
+      "dimension": "S_CONV",
+      "items": 333,
+      "majority_yes_rate": 0.2852852852852853,
+      "unanimous_rate": 0.2912912912912913,
+      "polarity_match_rate": 0.6456456456456456
     },
     {
-      "dimension": "COGL",
-      "items": 265,
-      "majority_yes_rate": 0.39245283018867927,
-      "unanimous_rate": 0.07924528301886792,
-      "polarity_match_rate": 0.6113207547169811
+      "dimension": "CLRT",
+      "items": 332,
+      "majority_yes_rate": 0.28313253012048195,
+      "unanimous_rate": 0.3102409638554217,
+      "polarity_match_rate": 0.5813253012048193
     },
     {
-      "dimension": "BKGN",
-      "items": 265,
-      "majority_yes_rate": 0.38113207547169814,
-      "unanimous_rate": 0.09811320754716982,
-      "polarity_match_rate": 0.6415094339622641
+      "dimension": "R_MASK",
+      "items": 332,
+      "majority_yes_rate": 0.2319277108433735,
+      "unanimous_rate": 0.33433734939759036,
+      "polarity_match_rate": 0.6204819277108434
     },
     {
-      "dimension": "CHNK",
-      "items": 264,
-      "majority_yes_rate": 0.3522727272727273,
-      "unanimous_rate": 0.045454545454545456,
-      "polarity_match_rate": 0.5946969696969697
+      "dimension": "S_NARR",
+      "items": 329,
+      "majority_yes_rate": 0.2553191489361702,
+      "unanimous_rate": 0.2887537993920973,
+      "polarity_match_rate": 0.6413373860182371
     },
     {
-      "dimension": "EMPH",
-      "items": 264,
-      "majority_yes_rate": 0.4015151515151515,
-      "unanimous_rate": 0.06818181818181818,
-      "polarity_match_rate": 0.6060606060606061
+      "dimension": "DARC",
+      "items": 329,
+      "majority_yes_rate": 0.17325227963525835,
+      "unanimous_rate": 0.2735562310030395,
+      "polarity_match_rate": 0.5562310030395137
     },
     {
-      "dimension": "ROUG",
-      "items": 262,
-      "majority_yes_rate": 0.31679389312977096,
-      "unanimous_rate": 0.08778625954198473,
-      "polarity_match_rate": 0.6335877862595419
+      "dimension": "VALS",
+      "items": 328,
+      "majority_yes_rate": 0.17378048780487804,
+      "unanimous_rate": 0.27134146341463417,
+      "polarity_match_rate": 0.5548780487804879
     },
     {
       "dimension": "S_TECH",
-      "items": 260,
-      "majority_yes_rate": 0.3192307692307692,
-      "unanimous_rate": 0.1076923076923077,
-      "polarity_match_rate": 0.5769230769230769
+      "items": 322,
+      "majority_yes_rate": 0.2670807453416149,
+      "unanimous_rate": 0.2981366459627329,
+      "polarity_match_rate": 0.5993788819875776
     },
     {
-      "dimension": "ESTH",
-      "items": 259,
-      "majority_yes_rate": 0.3552123552123552,
-      "unanimous_rate": 0.11969111969111969,
-      "polarity_match_rate": 0.6486486486486487
+      "dimension": "METL",
+      "items": 322,
+      "majority_yes_rate": 0.20186335403726707,
+      "unanimous_rate": 0.2950310559006211,
+      "polarity_match_rate": 0.577639751552795
     },
     {
-      "dimension": "WARM",
-      "items": 258,
-      "majority_yes_rate": 0.32558139534883723,
-      "unanimous_rate": 0.050387596899224806,
-      "polarity_match_rate": 0.5736434108527132
-    },
-    {
-      "dimension": "R_ORAL",
-      "items": 258,
-      "majority_yes_rate": 0.2713178294573643,
-      "unanimous_rate": 0.10077519379844961,
-      "polarity_match_rate": 0.5503875968992248
+      "dimension": "CHNK",
+      "items": 321,
+      "majority_yes_rate": 0.2554517133956386,
+      "unanimous_rate": 0.2585669781931464,
+      "polarity_match_rate": 0.5482866043613707
     },
     {
       "dimension": "BRGT",
-      "items": 253,
-      "majority_yes_rate": 0.31620553359683795,
-      "unanimous_rate": 0.07114624505928854,
-      "polarity_match_rate": 0.541501976284585
+      "items": 320,
+      "majority_yes_rate": 0.26875,
+      "unanimous_rate": 0.25625,
+      "polarity_match_rate": 0.553125
     },
     {
-      "dimension": "SMTH",
-      "items": 252,
-      "majority_yes_rate": 0.373015873015873,
-      "unanimous_rate": 0.08333333333333333,
-      "polarity_match_rate": 0.5912698412698413
+      "dimension": "COGL",
+      "items": 320,
+      "majority_yes_rate": 0.28125,
+      "unanimous_rate": 0.278125,
+      "polarity_match_rate": 0.596875
+    },
+    {
+      "dimension": "R_CHST",
+      "items": 320,
+      "majority_yes_rate": 0.284375,
+      "unanimous_rate": 0.259375,
+      "polarity_match_rate": 0.58125
+    },
+    {
+      "dimension": "R_MIXD",
+      "items": 318,
+      "majority_yes_rate": 0.22955974842767296,
+      "unanimous_rate": 0.29559748427672955,
+      "polarity_match_rate": 0.5754716981132075
+    },
+    {
+      "dimension": "VOLT",
+      "items": 318,
+      "majority_yes_rate": 0.29874213836477986,
+      "unanimous_rate": 0.330188679245283,
+      "polarity_match_rate": 0.5849056603773585
+    },
+    {
+      "dimension": "TEMP",
+      "items": 318,
+      "majority_yes_rate": 0.20754716981132076,
+      "unanimous_rate": 0.279874213836478,
+      "polarity_match_rate": 0.5408805031446541
+    },
+    {
+      "dimension": "ESTH",
+      "items": 317,
+      "majority_yes_rate": 0.2996845425867508,
+      "unanimous_rate": 0.30914826498422715,
+      "polarity_match_rate": 0.6246056782334385
     },
     {
       "dimension": "S_CASU",
-      "items": 251,
-      "majority_yes_rate": 0.2908366533864542,
-      "unanimous_rate": 0.0796812749003984,
-      "polarity_match_rate": 0.6254980079681275
+      "items": 316,
+      "majority_yes_rate": 0.22784810126582278,
+      "unanimous_rate": 0.22151898734177214,
+      "polarity_match_rate": 0.6170886075949367
     },
     {
-      "dimension": "RANG",
-      "items": 245,
-      "majority_yes_rate": 0.35918367346938773,
-      "unanimous_rate": 0.08571428571428572,
-      "polarity_match_rate": 0.5673469387755102
+      "dimension": "BKGN",
+      "items": 315,
+      "majority_yes_rate": 0.2634920634920635,
+      "unanimous_rate": 0.3047619047619048,
+      "polarity_match_rate": 0.5936507936507937
+    },
+    {
+      "dimension": "WARM",
+      "items": 314,
+      "majority_yes_rate": 0.22929936305732485,
+      "unanimous_rate": 0.2070063694267516,
+      "polarity_match_rate": 0.5859872611464968
+    },
+    {
+      "dimension": "SMTH",
+      "items": 314,
+      "majority_yes_rate": 0.28343949044585987,
+      "unanimous_rate": 0.27070063694267515,
+      "polarity_match_rate": 0.5987261146496815
+    },
+    {
+      "dimension": "HARM",
+      "items": 313,
+      "majority_yes_rate": 0.17891373801916932,
+      "unanimous_rate": 0.28753993610223644,
+      "polarity_match_rate": 0.5559105431309904
+    },
+    {
+      "dimension": "EMPH",
+      "items": 313,
+      "majority_yes_rate": 0.3003194888178914,
+      "unanimous_rate": 0.30990415335463256,
+      "polarity_match_rate": 0.6325878594249201
+    },
+    {
+      "dimension": "R_ORAL",
+      "items": 311,
+      "majority_yes_rate": 0.21221864951768488,
+      "unanimous_rate": 0.3183279742765273,
+      "polarity_match_rate": 0.5498392282958199
     },
     {
       "dimension": "STRU",
-      "items": 244,
-      "majority_yes_rate": 0.3524590163934426,
-      "unanimous_rate": 0.0860655737704918,
-      "polarity_match_rate": 0.6721311475409836
+      "items": 305,
+      "majority_yes_rate": 0.2754098360655738,
+      "unanimous_rate": 0.2786885245901639,
+      "polarity_match_rate": 0.6524590163934426
+    },
+    {
+      "dimension": "ROUG",
+      "items": 303,
+      "majority_yes_rate": 0.2376237623762376,
+      "unanimous_rate": 0.264026402640264,
+      "polarity_match_rate": 0.6171617161716172
+    },
+    {
+      "dimension": "RANG",
+      "items": 302,
+      "majority_yes_rate": 0.2582781456953642,
+      "unanimous_rate": 0.22185430463576158,
+      "polarity_match_rate": 0.5629139072847682
     },
     {
       "dimension": "TENS",
-      "items": 240,
-      "majority_yes_rate": 0.375,
-      "unanimous_rate": 0.13333333333333333,
-      "polarity_match_rate": 0.6208333333333333
+      "items": 302,
+      "majority_yes_rate": 0.2682119205298013,
+      "unanimous_rate": 0.2814569536423841,
+      "polarity_match_rate": 0.6357615894039735
     },
     {
       "dimension": "RCQL",
-      "items": 238,
-      "majority_yes_rate": 0.4117647058823529,
-      "unanimous_rate": 0.09663865546218488,
-      "polarity_match_rate": 0.5
-    },
-    {
-      "dimension": "FULL",
-      "items": 235,
-      "majority_yes_rate": 0.2723404255319149,
-      "unanimous_rate": 0.1148936170212766,
-      "polarity_match_rate": 0.574468085106383
+      "items": 286,
+      "majority_yes_rate": 0.2867132867132867,
+      "unanimous_rate": 0.25874125874125875,
+      "polarity_match_rate": 0.486013986013986
     },
     {
       "dimension": "R_NASL",
-      "items": 221,
-      "majority_yes_rate": 0.2669683257918552,
-      "unanimous_rate": 0.08597285067873303,
-      "polarity_match_rate": 0.6018099547511312
+      "items": 279,
+      "majority_yes_rate": 0.21505376344086022,
+      "unanimous_rate": 0.27956989247311825,
+      "polarity_match_rate": 0.6129032258064516
+    },
+    {
+      "dimension": "FULL",
+      "items": 273,
+      "majority_yes_rate": 0.23809523809523808,
+      "unanimous_rate": 0.2783882783882784,
+      "polarity_match_rate": 0.5677655677655677
     },
     {
       "dimension": "EXPL",
-      "items": 126,
-      "majority_yes_rate": 0.4126984126984127,
-      "unanimous_rate": 0.06349206349206349,
-      "polarity_match_rate": 0.6904761904761905
+      "items": 144,
+      "majority_yes_rate": 0.3333333333333333,
+      "unanimous_rate": 0.3263888888888889,
+      "polarity_match_rate": 0.6875
     },
     {
       "dimension": "LANG",
-      "items": 79,
-      "majority_yes_rate": 0.27848101265822783,
-      "unanimous_rate": 0.05063291139240506,
-      "polarity_match_rate": 0.27848101265822783
+      "items": 100,
+      "majority_yes_rate": 0.23,
+      "unanimous_rate": 0.22,
+      "polarity_match_rate": 0.23
     }
   ],
   "polarities": [
     {
       "polarity": "negative",
-      "items": 7700,
-      "majority_yes_rate": 0.2125974025974026,
-      "unanimous_rate": 0.08727272727272728
+      "items": 9241,
+      "majority_yes_rate": 0.14608808570501028,
+      "unanimous_rate": 0.2805973379504383
     },
     {
       "polarity": "positive",
-      "items": 7728,
-      "majority_yes_rate": 0.43788819875776397,
-      "unanimous_rate": 0.08618012422360248
+      "items": 9391,
+      "majority_yes_rate": 0.36204877009903097,
+      "unanimous_rate": 0.2954956873602385
     }
   ],
   "flags": [
+    {
+      "flag_id": "827f324f-83db-4cd3-b2ab-60431121ec8e",
+      "username": "user_1",
+      "dimension": "STNC",
+      "level": 2,
+      "polarity": "positive",
+      "file_name": "sample_01.mp3",
+      "reason": "3 speakers",
+      "created_at": "2026-05-06 11:04:05"
+    },
+    {
+      "flag_id": "bc5a9ef3-6f69-4def-82d3-4ae6edf31f7a",
+      "username": "user_1",
+      "dimension": "R_HEAD",
+      "level": 0,
+      "polarity": "negative",
+      "file_name": "sample_02.mp3",
+      "reason": "3 speakers, the description matches the first speaker (the woman)",
+      "created_at": "2026-05-06 10:41:59"
+    },
+    {
+      "flag_id": "b2321077-07c0-49ab-9d0e-41edf747d98b",
+      "username": "user_1",
+      "dimension": "R_ORAL",
+      "level": 0,
+      "polarity": "positive",
+      "file_name": "sample_07.mp3",
+      "reason": "Not speech it is mumbling",
+      "created_at": "2026-05-06 10:25:06"
+    },
+    {
+      "flag_id": "06d08215-8536-4b51-b28a-32875e187d2d",
+      "username": "user_2",
+      "dimension": "CLRT",
+      "level": 1,
+      "polarity": "positive",
+      "file_name": "sample_22.mp3",
+      "reason": "weird noises",
+      "created_at": "2026-05-05 22:47:31"
+    },
+    {
+      "flag_id": "d4c8672b-eafa-49f0-8b74-76eff06fa741",
+      "username": "user_1",
+      "dimension": "HARM",
+      "level": 2,
+      "polarity": "positive",
+      "file_name": "sample_17.mp3",
+      "reason": "No Speech, music only.",
+      "created_at": "2026-05-05 19:57:50"
+    },
+    {
+      "flag_id": "9560d55f-f605-462a-9eec-fbc42719966a",
+      "username": "user_1",
+      "dimension": "S_RANT",
+      "level": 2,
+      "polarity": "positive",
+      "file_name": "sample_00.mp3",
+      "reason": "2 speakers, one fits the description and the other doesn't",
+      "created_at": "2026-05-05 19:44:32"
+    },
+    {
+      "flag_id": "d47fe9d6-3f02-4cd1-baa2-f0b5b239458d",
+      "username": "user_1",
+      "dimension": "R_HEAD",
+      "level": 0,
+      "polarity": "positive",
+      "file_name": "sample_19.mp3",
+      "reason": "I hear no one speaking",
+      "created_at": "2026-05-05 19:41:15"
+    },
+    {
+      "flag_id": "abe7ee9d-8be6-47a2-b14c-e61ae1af0651",
+      "username": "user_1",
+      "dimension": "S_CART",
+      "level": 4,
+      "polarity": "positive",
+      "file_name": "sample_08.mp3",
+      "reason": "No speech",
+      "created_at": "2026-05-05 19:24:04"
+    },
+    {
+      "flag_id": "5122b79f-c324-41ad-b175-5222c465a3dd",
+      "username": "user_1",
+      "dimension": "SMTH",
+      "level": 0,
+      "polarity": "positive",
+      "file_name": "sample_18.mp3",
+      "reason": "Mumbling, no speech",
+      "created_at": "2026-05-05 19:13:40"
+    },
+    {
+      "flag_id": "765954c9-23c7-4a30-991e-2a064f102272",
+      "username": "user_1",
+      "dimension": "FOCS",
+      "level": 6,
+      "polarity": "negative",
+      "file_name": "sample_18.mp3",
+      "reason": "No speech in the audio",
+      "created_at": "2026-05-05 18:34:25"
+    },
+    {
+      "flag_id": "ec2295c1-a895-47d1-a056-d17c01990ada",
+      "username": "user_1",
+      "dimension": "VOLT",
+      "level": 6,
+      "polarity": "positive",
+      "file_name": "sample_05.mp3",
+      "reason": "2 speakers",
+      "created_at": "2026-05-05 13:45:25"
+    },
+    {
+      "flag_id": "d66963ed-db8c-42bc-bfa4-842b23c66a93",
+      "username": "user_1",
+      "dimension": "VFLX",
+      "level": 0,
+      "polarity": "positive",
+      "file_name": "sample_20.mp3",
+      "reason": "it is only music",
+      "created_at": "2026-05-05 13:15:02"
+    },
+    {
+      "flag_id": "88c884e0-9e42-4118-8b69-0236ea9120b2",
+      "username": "user_1",
+      "dimension": "DFLU",
+      "level": 6,
+      "polarity": "positive",
+      "file_name": "sample_04.mp3",
+      "reason": "NSFW content: Sexual material",
+      "created_at": "2026-05-05 12:55:50"
+    },
+    {
+      "flag_id": "2e92f0fd-6af5-490b-a77b-0cc5f93ea2fe",
+      "username": "user_1",
+      "dimension": "BKGN",
+      "level": 1,
+      "polarity": "positive",
+      "file_name": "sample_17.mp3",
+      "reason": "No audio at all",
+      "created_at": "2026-05-04 22:24:15"
+    },
+    {
+      "flag_id": "0db0a4f2-9fa9-4960-b1fe-0ba0503f01af",
+      "username": "user_1",
+      "dimension": "VALN",
+      "level": 5,
+      "polarity": "negative",
+      "file_name": "sample_16.mp3",
+      "reason": "No speech",
+      "created_at": "2026-05-04 22:09:22"
+    },
+    {
+      "flag_id": "0c541f37-bba7-4ec5-a1ed-7109575c5dce",
+      "username": "user_1",
+      "dimension": "ARSH",
+      "level": 3,
+      "polarity": "positive",
+      "file_name": "sample_19.mp3",
+      "reason": "No Audio",
+      "created_at": "2026-05-04 21:57:49"
+    },
+    {
+      "flag_id": "6efe3d1a-8e45-498f-97f8-23f23d3b521b",
+      "username": "user_1",
+      "dimension": "R_NASL",
+      "level": 3,
+      "polarity": "positive",
+      "file_name": "sample_18.mp3",
+      "reason": "No speech only \"mhmmm\"",
+      "created_at": "2026-05-04 21:57:10"
+    },
+    {
+      "flag_id": "c064bfe6-2ef5-4105-a2b2-b3d631755c38",
+      "username": "user_1",
+      "dimension": "REGS",
+      "level": 5,
+      "polarity": "positive",
+      "file_name": "sample_02.mp3",
+      "reason": "2 speakers, don't know which one is described",
+      "created_at": "2026-05-04 21:55:14"
+    },
+    {
+      "flag_id": "1b3bac5c-8d6a-4a4e-a35a-5560086c9070",
+      "username": "user_1",
+      "dimension": "VFLX",
+      "level": 3,
+      "polarity": "negative",
+      "file_name": "sample_05.mp3",
+      "reason": "2 speakers I don't know the description about whom",
+      "created_at": "2026-05-04 21:33:13"
+    },
+    {
+      "flag_id": "32338542-34c0-4474-a8a4-f0ec25760374",
+      "username": "user_1",
+      "dimension": "BRGT",
+      "level": 1,
+      "polarity": "positive",
+      "file_name": "sample_09.mp3",
+      "reason": "No one is speaking it is breathing noise",
+      "created_at": "2026-05-04 21:13:25"
+    },
+    {
+      "flag_id": "7e3deb2d-c4e5-4615-a46c-8003f9849914",
+      "username": "user_1",
+      "dimension": "RESP",
+      "level": 4,
+      "polarity": "positive",
+      "file_name": "sample_18.mp3",
+      "reason": "No speech, heavy breathing only",
+      "created_at": "2026-05-04 20:39:28"
+    },
+    {
+      "flag_id": "57a4a545-7821-46ac-9c18-8f7cfbf39a8e",
+      "username": "user_1",
+      "dimension": "EMPH",
+      "level": 0,
+      "polarity": "negative",
+      "file_name": "sample_11.mp3",
+      "reason": "No speech, sexual noise only",
+      "created_at": "2026-05-04 20:34:39"
+    },
     {
       "flag_id": "bf1c2c21-cbc9-400f-b0d1-2aadf5b930c8",
       "username": "user_2",
@@ -602,10 +835,10 @@
       "created_at": "2026-04-16 09:56:15"
     }
   ],
-  "human_upper_bound_binary": 0.09655172413793103,
-  "human_accuracy_binary": 0.4974801982744457,
-  "human_balanced_accuracy_binary": 0.5114848261606935,
-  "human_loo_accuracy_binary": 0.45652173913043476,
-  "human_loo_balanced_accuracy_binary": 0.45260347129506007,
-  "human_loo_n_annotations": 184.0
+  "human_upper_bound_binary": 0.05398288347597102,
+  "human_accuracy_binary": 0.5545603970882631,
+  "human_balanced_accuracy_binary": 0.5358498954475968,
+  "human_loo_accuracy_binary": 0.5090027700831025,
+  "human_loo_balanced_accuracy_binary": 0.5028146051558987,
+  "human_loo_n_annotations": 1444.0
 }

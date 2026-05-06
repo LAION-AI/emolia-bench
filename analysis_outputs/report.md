@@ -19,7 +19,7 @@ model trained against `majority_present`.
 | Subset | Pairwise accuracy | Pairwise balanced acc. | LOO accuracy | LOO balanced acc. | LOO n |
 |---|---:|---:|---:|---:|---:|
 | emolia-emo | 0.551 | 0.562 | 0.593 | 0.572 | 13208 |
-| emolia-dim | 0.497 | 0.511 | 0.457 | 0.453 | 184 |
+| emolia-dim | 0.555 | 0.536 | 0.509 | 0.503 | 1444 |
 
 ## Human ceiling with the preselection prior as a 4th rater
 
@@ -33,7 +33,7 @@ and lets us see how Gemini-as-rater compares to a human.
 | Subset | Pairwise accuracy | Pairwise balanced acc. | LOO accuracy | LOO balanced acc. | LOO n | Fleiss κ (full coverage) |
 |---|---:|---:|---:|---:|---:|---:|
 | emolia-emo | 0.602 | 0.610 | 0.635 | 0.632 | 31942 | 0.196 |
-| emolia-dim | 0.523 | 0.536 | 0.588 | 0.584 | 4837 | n/a |
+| emolia-dim | 0.565 | 0.554 | 0.593 | 0.591 | 20811 | n/a |
 
 ### How well does Gemini's preselection itself match the human consensus?
 
@@ -43,14 +43,14 @@ majority vote (same way `benchmark.py` scores a CLAP model):
 | Subset | Items | Accuracy | Balanced accuracy |
 |---|---:|---:|---:|
 | emolia-emo | 7986 | 0.711 | 0.716 |
-| emolia-dim | 1430 | 0.652 | 0.660 |
+| emolia-dim | 6029 | 0.660 | 0.672 |
 
 ## Quick stats
 
 | Subset | Annotators | Items (3-rater) | Annotations | Maj-positive rate | Pairwise κ (binary) | Fleiss κ (binary) |
 |---|---:|---:|---:|---:|---:|---:|
 | emolia-emo | 3 | 7984 | 23958 | 0.578 | 0.113 | 0.086 |
-| emolia-dim | 8 | 116 | 18311 | 0.325 | -0.001 | -0.042 |
+| emolia-dim | 8 | 868 | 30798 | 0.255 | 0.056 | -0.001 |
 
 ## emolia-emo (ordinal: not_present / weakly_present / strongly_present)
 
@@ -127,12 +127,12 @@ These are the numbers to compare a CLAP-style model's accuracy / balanced accura
 ## emolia-dim (binary yes/no against rubric descriptions)
 
 - Annotators: **8** (user_0, user_1, user_2, user_3, user_4, user_5, user_6, user_8)
-- Raw annotations: **18311** (deduplicated: 18311)
-- Items total: **15428** (1-rater: 12669, 2-rater: 2639, 3-rater: 116, 4-rater: 4)
-- Complete 3-rater items: **116**
-- Items flagged for removal: **10** (see `flags.csv`; flagged items are kept in `benchmark_labels.csv` with `flagged=true` so they can be filtered out at training time)
-- Majority-yes rate: **0.325**
-- Preselection-confirmed rate (majority matched the polarity prior): **0.612**
+- Raw annotations: **30798** (deduplicated: 30798)
+- Items total: **18632** (1-rater: 7400, 2-rater: 10331, 3-rater: 868, 4-rater: 33)
+- Complete 3-rater items: **868**
+- Items flagged for removal: **33** (see `flags.csv`; flagged items are kept in `benchmark_labels.csv` with `flagged=true` so they can be filtered out at training time)
+- Majority-yes rate: **0.255**
+- Preselection-confirmed rate (majority matched the polarity prior): **0.606**
 
 Sampling strategies. `polarity=positive` items were preselected as
 likely to *match* the rubric description for the given dimension/level
@@ -145,10 +145,10 @@ answer independently — `matches_intended_polarity` in
 
 | Metric | Value |
 |---|---|
-| Exact 3-way agreement | 0.224 |
-| Mean pairwise exact agreement | 0.097 |
-| Mean pairwise Cohen's kappa | -0.001 |
-| Fleiss' kappa | -0.042 |
+| Exact 3-way agreement | 0.256 |
+| Mean pairwise exact agreement | 0.054 |
+| Mean pairwise Cohen's kappa | 0.056 |
+| Fleiss' kappa | -0.001 |
 
 ### Human upper bound (binary task)
 
@@ -156,89 +156,111 @@ These are the numbers to compare a CLAP-style model's accuracy / balanced accura
 
 | Metric | Humans only | Humans + Gemini preselection |
 |---|---:|---:|
-| Pairwise accuracy | 0.497 | 0.523 |
-| Pairwise balanced accuracy | 0.511 | 0.536 |
-| Leave-one-out accuracy | 0.457 | 0.588 |
-| Leave-one-out balanced accuracy | 0.453 | 0.584 |
-| LOO comparisons used | 184 | 4837 |
-| Fleiss κ (full-coverage items only) | -0.042 | n/a |
+| Pairwise accuracy | 0.555 | 0.565 |
+| Pairwise balanced accuracy | 0.536 | 0.554 |
+| Leave-one-out accuracy | 0.509 | 0.593 |
+| Leave-one-out balanced accuracy | 0.503 | 0.591 |
+| LOO comparisons used | 1444 | 20811 |
+| Fleiss κ (full-coverage items only) | -0.001 | n/a |
 
 ### Per-polarity summary
 
 | polarity | items | majority-yes | unanimous |
 |---|---:|---:|---:|
-| negative | 7700 | 0.213 | 0.087 |
-| positive | 7728 | 0.438 | 0.086 |
+| negative | 9241 | 0.146 | 0.281 |
+| positive | 9391 | 0.362 | 0.295 |
 
 ### Per-dimension summary (sorted by item count)
 
 | dimension | items | majority-yes | unanimous | polarity-match |
 |---|---:|---:|---:|---:|
-| REGS | 299 | 0.258 | 0.057 | 0.599 |
-| DFLU | 297 | 0.347 | 0.101 | 0.653 |
-| ARSH | 295 | 0.254 | 0.064 | 0.617 |
-| S_RANT | 295 | 0.339 | 0.088 | 0.637 |
-| S_DRAM | 294 | 0.306 | 0.085 | 0.636 |
-| GEND | 294 | 0.286 | 0.075 | 0.636 |
-| VULN | 291 | 0.354 | 0.093 | 0.581 |
-| CLRT | 290 | 0.355 | 0.090 | 0.614 |
-| S_FORM | 288 | 0.368 | 0.059 | 0.694 |
-| AGEV | 288 | 0.326 | 0.059 | 0.618 |
-| S_WHIS | 287 | 0.296 | 0.091 | 0.631 |
-| S_MONO | 286 | 0.392 | 0.122 | 0.643 |
-| AROU | 286 | 0.311 | 0.077 | 0.619 |
-| R_MASK | 285 | 0.312 | 0.119 | 0.572 |
-| S_PLAY | 284 | 0.313 | 0.074 | 0.644 |
-| FOCS | 284 | 0.303 | 0.049 | 0.556 |
-| S_AUTH | 281 | 0.327 | 0.114 | 0.669 |
-| DARC | 281 | 0.238 | 0.107 | 0.584 |
-| S_NEWS | 281 | 0.370 | 0.114 | 0.655 |
-| RESP | 280 | 0.354 | 0.082 | 0.679 |
-| VFLX | 280 | 0.182 | 0.089 | 0.554 |
-| R_THRT | 280 | 0.321 | 0.071 | 0.607 |
-| S_CART | 279 | 0.341 | 0.072 | 0.688 |
-| R_HEAD | 278 | 0.263 | 0.097 | 0.583 |
-| VOLT | 278 | 0.363 | 0.097 | 0.608 |
-| S_NARR | 277 | 0.350 | 0.083 | 0.639 |
-| VALN | 277 | 0.347 | 0.072 | 0.646 |
-| ATCK | 276 | 0.377 | 0.091 | 0.641 |
-| S_ASMR | 274 | 0.292 | 0.095 | 0.650 |
-| S_CONV | 274 | 0.347 | 0.091 | 0.664 |
-| R_MIXD | 273 | 0.304 | 0.103 | 0.597 |
-| R_CHST | 271 | 0.358 | 0.063 | 0.587 |
-| STNC | 270 | 0.378 | 0.104 | 0.696 |
-| TEMP | 269 | 0.286 | 0.089 | 0.558 |
-| VALS | 267 | 0.243 | 0.082 | 0.554 |
-| S_STRY | 267 | 0.390 | 0.082 | 0.670 |
-| METL | 267 | 0.270 | 0.109 | 0.562 |
-| HARM | 266 | 0.263 | 0.086 | 0.530 |
-| COGL | 265 | 0.392 | 0.079 | 0.611 |
-| BKGN | 265 | 0.381 | 0.098 | 0.642 |
-| CHNK | 264 | 0.352 | 0.045 | 0.595 |
-| EMPH | 264 | 0.402 | 0.068 | 0.606 |
-| ROUG | 262 | 0.317 | 0.088 | 0.634 |
-| S_TECH | 260 | 0.319 | 0.108 | 0.577 |
-| ESTH | 259 | 0.355 | 0.120 | 0.649 |
-| WARM | 258 | 0.326 | 0.050 | 0.574 |
-| R_ORAL | 258 | 0.271 | 0.101 | 0.550 |
-| BRGT | 253 | 0.316 | 0.071 | 0.542 |
-| SMTH | 252 | 0.373 | 0.083 | 0.591 |
-| S_CASU | 251 | 0.291 | 0.080 | 0.625 |
-| RANG | 245 | 0.359 | 0.086 | 0.567 |
-| STRU | 244 | 0.352 | 0.086 | 0.672 |
-| TENS | 240 | 0.375 | 0.133 | 0.621 |
-| RCQL | 238 | 0.412 | 0.097 | 0.500 |
-| FULL | 235 | 0.272 | 0.115 | 0.574 |
-| R_NASL | 221 | 0.267 | 0.086 | 0.602 |
-| EXPL | 126 | 0.413 | 0.063 | 0.690 |
-| LANG | 79 | 0.278 | 0.051 | 0.278 |
+| REGS | 350 | 0.183 | 0.263 | 0.586 |
+| VULN | 350 | 0.283 | 0.309 | 0.577 |
+| ARSH | 350 | 0.191 | 0.311 | 0.611 |
+| ATCK | 350 | 0.349 | 0.346 | 0.643 |
+| S_MONO | 350 | 0.340 | 0.314 | 0.640 |
+| S_DRAM | 350 | 0.243 | 0.291 | 0.623 |
+| S_PLAY | 350 | 0.223 | 0.269 | 0.620 |
+| S_RANT | 350 | 0.260 | 0.300 | 0.651 |
+| S_WHIS | 350 | 0.260 | 0.300 | 0.640 |
+| GEND | 350 | 0.197 | 0.254 | 0.634 |
+| VFLX | 350 | 0.126 | 0.297 | 0.551 |
+| AGEV | 349 | 0.266 | 0.289 | 0.605 |
+| S_CART | 347 | 0.297 | 0.303 | 0.671 |
+| RESP | 344 | 0.320 | 0.317 | 0.631 |
+| VALN | 343 | 0.271 | 0.294 | 0.633 |
+| AROU | 343 | 0.224 | 0.292 | 0.609 |
+| STNC | 342 | 0.327 | 0.301 | 0.693 |
+| S_FORM | 342 | 0.310 | 0.269 | 0.693 |
+| FOCS | 341 | 0.214 | 0.235 | 0.548 |
+| DFLU | 340 | 0.300 | 0.324 | 0.656 |
+| S_NEWS | 340 | 0.312 | 0.341 | 0.662 |
+| R_HEAD | 340 | 0.218 | 0.291 | 0.544 |
+| S_AUTH | 338 | 0.272 | 0.284 | 0.678 |
+| R_THRT | 336 | 0.241 | 0.268 | 0.607 |
+| S_STRY | 335 | 0.307 | 0.310 | 0.669 |
+| S_ASMR | 333 | 0.234 | 0.324 | 0.634 |
+| S_CONV | 333 | 0.285 | 0.291 | 0.646 |
+| CLRT | 332 | 0.283 | 0.310 | 0.581 |
+| R_MASK | 332 | 0.232 | 0.334 | 0.620 |
+| S_NARR | 329 | 0.255 | 0.289 | 0.641 |
+| DARC | 329 | 0.173 | 0.274 | 0.556 |
+| VALS | 328 | 0.174 | 0.271 | 0.555 |
+| S_TECH | 322 | 0.267 | 0.298 | 0.599 |
+| METL | 322 | 0.202 | 0.295 | 0.578 |
+| CHNK | 321 | 0.255 | 0.259 | 0.548 |
+| BRGT | 320 | 0.269 | 0.256 | 0.553 |
+| COGL | 320 | 0.281 | 0.278 | 0.597 |
+| R_CHST | 320 | 0.284 | 0.259 | 0.581 |
+| R_MIXD | 318 | 0.230 | 0.296 | 0.575 |
+| VOLT | 318 | 0.299 | 0.330 | 0.585 |
+| TEMP | 318 | 0.208 | 0.280 | 0.541 |
+| ESTH | 317 | 0.300 | 0.309 | 0.625 |
+| S_CASU | 316 | 0.228 | 0.222 | 0.617 |
+| BKGN | 315 | 0.263 | 0.305 | 0.594 |
+| WARM | 314 | 0.229 | 0.207 | 0.586 |
+| SMTH | 314 | 0.283 | 0.271 | 0.599 |
+| HARM | 313 | 0.179 | 0.288 | 0.556 |
+| EMPH | 313 | 0.300 | 0.310 | 0.633 |
+| R_ORAL | 311 | 0.212 | 0.318 | 0.550 |
+| STRU | 305 | 0.275 | 0.279 | 0.652 |
+| ROUG | 303 | 0.238 | 0.264 | 0.617 |
+| RANG | 302 | 0.258 | 0.222 | 0.563 |
+| TENS | 302 | 0.268 | 0.281 | 0.636 |
+| RCQL | 286 | 0.287 | 0.259 | 0.486 |
+| R_NASL | 279 | 0.215 | 0.280 | 0.613 |
+| FULL | 273 | 0.238 | 0.278 | 0.568 |
+| EXPL | 144 | 0.333 | 0.326 | 0.688 |
+| LANG | 100 | 0.230 | 0.220 | 0.230 |
 
 ### Annotator-flagged items
 
-11 items have been flagged by an annotator with a reason (typically silence / no speech). They remain in `benchmark_labels.csv` but are tagged `flagged=true` so the model trainer can exclude them.
+33 items have been flagged by an annotator with a reason (typically silence / no speech). They remain in `benchmark_labels.csv` but are tagged `flagged=true` so the model trainer can exclude them.
 
 | flagger | dimension | level | polarity | file_name | reason |
 |---|---|---|---|---|---|
+| user_1 | STNC | 2 | positive | sample_01.mp3 | 3 speakers |
+| user_1 | R_HEAD | 0 | negative | sample_02.mp3 | 3 speakers, the description matches the first speaker (the woman) |
+| user_1 | R_ORAL | 0 | positive | sample_07.mp3 | Not speech it is mumbling |
+| user_2 | CLRT | 1 | positive | sample_22.mp3 | weird noises |
+| user_1 | HARM | 2 | positive | sample_17.mp3 | No Speech, music only. |
+| user_1 | S_RANT | 2 | positive | sample_00.mp3 | 2 speakers, one fits the description and the other doesn't |
+| user_1 | R_HEAD | 0 | positive | sample_19.mp3 | I hear no one speaking |
+| user_1 | S_CART | 4 | positive | sample_08.mp3 | No speech |
+| user_1 | SMTH | 0 | positive | sample_18.mp3 | Mumbling, no speech |
+| user_1 | FOCS | 6 | negative | sample_18.mp3 | No speech in the audio |
+| user_1 | VOLT | 6 | positive | sample_05.mp3 | 2 speakers |
+| user_1 | VFLX | 0 | positive | sample_20.mp3 | it is only music |
+| user_1 | DFLU | 6 | positive | sample_04.mp3 | NSFW content: Sexual material |
+| user_1 | BKGN | 1 | positive | sample_17.mp3 | No audio at all |
+| user_1 | VALN | 5 | negative | sample_16.mp3 | No speech |
+| user_1 | ARSH | 3 | positive | sample_19.mp3 | No Audio |
+| user_1 | R_NASL | 3 | positive | sample_18.mp3 | No speech only "mhmmm" |
+| user_1 | REGS | 5 | positive | sample_02.mp3 | 2 speakers, don't know which one is described |
+| user_1 | VFLX | 3 | negative | sample_05.mp3 | 2 speakers I don't know the description about whom |
+| user_1 | BRGT | 1 | positive | sample_09.mp3 | No one is speaking it is breathing noise |
+| user_1 | RESP | 4 | positive | sample_18.mp3 | No speech, heavy breathing only |
+| user_1 | EMPH | 0 | negative | sample_11.mp3 | No speech, sexual noise only |
 | user_2 | ESTH | 0 | positive | sample_07.mp3 | weird noises |
 | user_2 | R_HEAD | 4 | positive | sample_20.mp3 | weird noise |
 | user_0 | ROUG | 1 | positive | sample_00.mp3 | absolute silence, should be removed |
