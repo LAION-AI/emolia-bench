@@ -400,12 +400,23 @@ def write_subset_report(
         else "no successful predictions"
     )
 
+    fs = summary.get("filter_stats", {})
+    filter_line = (
+        f"- Filter mode: **{summary.get('filter_mode', 'all')}** — "
+        f"input rows {fs.get('input', '?')}, "
+        f"dropped <min-raters: {fs.get('dropped_below_min_raters', 0)}, "
+        f"dropped flagged: {fs.get('dropped_flagged', 0)}, "
+        f"dropped non-unanimous: {fs.get('dropped_non_unanimous', 0)} → "
+        f"kept {fs.get('kept', summary.get('rows_total', '?'))}"
+    )
+
     md = [
         f"# Benchmark report — `{subset}`",
         "",
         *rubric_lines,
         f"- Mode: **{summary['mode']}**"
         + (f" (`{summary.get('endpoint')}`)" if summary.get("endpoint") else ""),
+        filter_line,
         f"- Items considered: **{summary['rows_total']}** "
         f"(evaluated OK: **{summary['rows_evaluated_ok']}**, missing audio: "
         f"**{summary['missing_audio']}**, errors: **{summary['evaluation_errors']}**)",
@@ -483,6 +494,43 @@ def write_subset_report(
 
 # ---------- subset orchestration ----------
 
+def filter_labels(
+    labels: pd.DataFrame,
+    *,
+    min_raters: int,
+    exclude_flagged: bool,
+    unanimous_only: bool,
+) -> tuple[pd.DataFrame, dict[str, int]]:
+    """Apply the three orthogonal label filters and report what was dropped.
+
+    Returns the filtered dataframe and a small dict describing the rows
+    excluded by each filter (used in the report's "filter mode" section).
+    """
+    dropped = {"input": int(len(labels))}
+
+    n_raters_col = labels["n_raters"] if "n_raters" in labels.columns else pd.Series([3] * len(labels))
+    mask_min_raters = n_raters_col >= min_raters
+    dropped["dropped_below_min_raters"] = int((~mask_min_raters).sum())
+    labels = labels[mask_min_raters].reset_index(drop=True)
+
+    if exclude_flagged and "flagged" in labels.columns:
+        mask_unflagged = ~labels["flagged"].astype(bool)
+        dropped["dropped_flagged"] = int((~mask_unflagged).sum())
+        labels = labels[mask_unflagged].reset_index(drop=True)
+    else:
+        dropped["dropped_flagged"] = 0
+
+    if unanimous_only and "benchmark_bucket" in labels.columns:
+        mask_unanimous = labels["benchmark_bucket"].astype(str).str.startswith("unanimous_")
+        dropped["dropped_non_unanimous"] = int((~mask_unanimous).sum())
+        labels = labels[mask_unanimous].reset_index(drop=True)
+    else:
+        dropped["dropped_non_unanimous"] = 0
+
+    dropped["kept"] = int(len(labels))
+    return labels, dropped
+
+
 def run_subset(
     subset: str,
     *,
@@ -493,7 +541,9 @@ def run_subset(
     threshold: float,
     timeout: float,
     limit: int | None,
-    require_3_raters: bool,
+    min_raters: int,
+    exclude_flagged: bool,
+    unanimous_only: bool,
     send_audio: bool,
 ) -> str:
     out_dir = output_root / subset
@@ -507,8 +557,12 @@ def run_subset(
     labels = pd.read_csv(labels_path)
     if "n_raters" not in labels.columns:
         labels["n_raters"] = 3
-    if require_3_raters:
-        labels = labels[labels["n_raters"] >= 3].reset_index(drop=True)
+    labels, filter_stats = filter_labels(
+        labels,
+        min_raters=min_raters,
+        exclude_flagged=exclude_flagged,
+        unanimous_only=unanimous_only,
+    )
     if limit is not None:
         labels = labels.iloc[:limit].copy()
 
@@ -542,12 +596,28 @@ def run_subset(
         send_audio=send_audio,
     )
 
+    if min_raters >= 2 and exclude_flagged and not unanimous_only:
+        filter_mode = "stronger-evidence (≥2 raters, no flags)"
+    elif unanimous_only:
+        filter_mode = f"unanimous-only (≥{min_raters} raters, " + (
+            "no flags)" if exclude_flagged else "flags allowed)"
+        )
+    elif min_raters == 1 and not exclude_flagged and not unanimous_only:
+        filter_mode = "all (every item, single-rater allowed, flags allowed)"
+    else:
+        filter_mode = (
+            f"custom: min_raters={min_raters}, "
+            f"exclude_flagged={exclude_flagged}, unanimous_only={unanimous_only}"
+        )
+
     rubric_lines = score_rubric(majority_rate, human_numbers)
     summary: dict[str, Any] = {
         "subset": subset,
         "mode": "remote" if endpoint else "sham_hash",
         "endpoint": endpoint,
         "threshold": threshold,
+        "filter_mode": filter_mode,
+        "filter_stats": filter_stats,
         "rows_total": int(len(labels)),
         "rows_evaluated_ok": int(predictions["ok"].sum()) if len(predictions) else 0,
         "missing_audio": int(missing),
@@ -577,14 +647,29 @@ def parse_args() -> argparse.Namespace:
                    help="Max rows after filtering, for quick smoke tests.")
     p.add_argument("--no-audio-send", action="store_true",
                    help="With --endpoint: send only stem + text in JSON.")
+    # Three orthogonal filters that select which items count toward the score:
+    #   --min-raters N       drop items with fewer than N human raters
+    #   --exclude-flagged    drop items annotators flagged as broken audio
+    #   --unanimous-only     keep only items where every rater agreed
+    # Defaults are permissive: every item in benchmark_labels.csv counts.
+    p.add_argument("--min-raters", type=int, default=1,
+                   help="Drop items with fewer than this many human raters "
+                        "(default: 1 = keep everything).")
+    p.add_argument("--exclude-flagged", action="store_true",
+                   help="Drop items an annotator flagged as broken audio "
+                        "(silence, music, multi-speaker, etc.).")
+    p.add_argument("--unanimous-only", action="store_true",
+                   help="Keep only items where every rater unanimously "
+                        "agreed (benchmark_bucket starts with `unanimous_`).")
     p.add_argument("--require-3-raters", action="store_true",
-                   help="Restrict labels to items with all 3 raters present.")
+                   help="Shortcut for --min-raters 3 (kept for backward compatibility).")
     return p.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    min_raters = max(args.min_raters, 3 if args.require_3_raters else 1)
     subsets = SUBSETS if args.subset == "both" else (args.subset,)
     for subset in subsets:
         text = run_subset(
@@ -596,7 +681,9 @@ def main() -> None:
             threshold=args.threshold,
             timeout=args.timeout,
             limit=args.limit,
-            require_3_raters=args.require_3_raters,
+            min_raters=min_raters,
+            exclude_flagged=args.exclude_flagged,
+            unanimous_only=args.unanimous_only,
             send_audio=not args.no_audio_send,
         )
         print(text)

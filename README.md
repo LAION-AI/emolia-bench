@@ -97,11 +97,81 @@ uv run benchmark.py --endpoint http://127.0.0.1:8765/v1/similarity
 Useful flags:
 
 * `--subset emolia-emo|emolia-dim|both` (default `both`).
-* `--require-3-raters` — restrict to items with full 3-rater coverage.
 * `--limit N` — quick smoke test on first N rows.
 * `--threshold 0.0` — predict positive if similarity ≥ threshold.
 * `--no-audio-send` — with `--endpoint`, send only stem + text in the JSON
   payload (server reads files itself).
+* Filter flags (default keeps every row in `benchmark_labels.csv`):
+    * `--min-raters N` — drop items with fewer than N human raters.
+    * `--exclude-flagged` — drop items annotators flagged as broken audio.
+    * `--unanimous-only` — keep only items where every rater agreed.
+
+### The three standard use modes
+
+`benchmark_labels.csv` keeps every annotated item, including ones with only
+one rater and ones an annotator flagged. The columns `n_raters`,
+`benchmark_bucket`, and `flagged` describe each row so you can pick the
+subset that matches your evaluation goal:
+
+#### 1. All samples (default — including single-rater items)
+
+The most permissive view. Every annotated item counts, the label
+`majority_present` is the majority of whatever votes are available (a single
+rater's vote when only one human rated the item).
+
+```bash
+uv run benchmark.py
+# or, equivalently in pandas:
+labels = pd.read_csv("analysis_outputs/emolia-dim/benchmark_labels.csv")
+```
+
+Use this when you want maximum data volume and don't mind that ~25% of
+emolia-dim labels come from a single rater.
+
+#### 2. Stronger-evidence cases (≥2 raters, no flagged audio)
+
+The recommended evaluation subset for headline numbers in a paper. Every
+included item has at least two humans agreeing or disagreeing on the same
+clip, and broken-audio items are excluded.
+
+```bash
+uv run benchmark.py --min-raters 2 --exclude-flagged
+# or, in pandas:
+labels = pd.read_csv("analysis_outputs/emolia-dim/benchmark_labels.csv")
+labels = labels[(labels["n_raters"] >= 2) & (~labels["flagged"])]
+```
+
+This matches the "2 humans + Gemini preselection = 3-rater panel" that the
+human upper bound is computed on, so the model and the human ceiling are
+comparable.
+
+#### 3. Auditing the broken-audio items (flagged-only or flag-aware)
+
+If you want to see how a model performs *only* on the items annotators
+flagged, or audit them yourself:
+
+```bash
+# Just the flagged items, in pandas:
+labels = pd.read_csv("analysis_outputs/emolia-dim/benchmark_labels.csv")
+flagged = labels[labels["flagged"]]
+# Or skim the raw flag reasons:
+flags = pd.read_csv("annotations/emolia-dim/flags.csv")
+```
+
+The 37 flagged items in emolia-dim are 0.2% of the corpus and the headline
+metrics move by < 0.001 with or without them, but it's the right thing to
+inspect when training a model that should robustly skip clips with no
+speech.
+
+#### Bonus: unanimous-only (the cleanest possible labels)
+
+Add `--unanimous-only` to either of the modes above to keep only items
+where *every* rater on the panel agreed. Smallest sample but highest
+label confidence.
+
+```bash
+uv run benchmark.py --min-raters 2 --exclude-flagged --unanimous-only
+```
 
 For each subset, `benchmark.py` writes to `benchmark_outputs/<subset>/`:
 
