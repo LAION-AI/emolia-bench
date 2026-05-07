@@ -9,3 +9,14 @@ dependencies = [
     "numpy",
     "pandas",
 ]
+
+[project.optional-dependencies]
+# In-process scoring backends (`--clap-model` and `--model voiceclap-*`).
+# Sham mode and `--endpoint` mode don't need these — that's why they're an
+# extra. Install with `uv sync --extra clap`.
+clap = [
+    "librosa",
+    "sentence-transformers",
+    "torch",
+    "transformers",
+]

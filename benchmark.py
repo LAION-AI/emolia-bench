@@ -48,6 +48,11 @@ DATASET_ROOT = Path("dataset")
 DEFAULT_OUTPUT_DIR = Path("benchmark_outputs")
 SUBSETS = ("emolia-emo", "emolia-dim")
 
+VOICECLAP_HF_REPOS = {
+    "voiceclap-small": "laion/voiceclap-small",
+    "voiceclap-large": "laion/voiceclap-large",
+}
+
 
 # ---------- prompt construction ----------
 
@@ -101,6 +106,226 @@ def sham_similarity(audio_stem: str, text: str) -> float:
     """Deterministic [-1, 1] sham score; ignores audio content."""
     h = hashlib.sha256(b"clap-sham-v1" + audio_stem.encode("utf-8") + b"|" + text.encode("utf-8")).digest()
     return float(2.0 * (int.from_bytes(h[:8], "big") / (2**64)) - 1.0)
+
+
+def _patch_omni_snapshot(snapshot: str) -> str:
+    """Local snapshot quirk: drop ``fix_mistral_regex`` from tokenizer_config.json.
+
+    Some fine-tuned omni-embed checkpoints carry that key and current
+    transformers refuses to load them otherwise. HF repos and clean checkpoints
+    are unaffected (function returns the input path).
+    """
+    import shutil
+    import tempfile
+    tc = Path(snapshot) / "tokenizer_config.json"
+    if not tc.exists():
+        return snapshot
+    try:
+        cfg = json.loads(tc.read_text())
+    except Exception:
+        return snapshot
+    if "fix_mistral_regex" not in cfg:
+        return snapshot
+    out = Path(tempfile.mkdtemp(prefix="emolia_omni_"))
+    for entry in Path(snapshot).iterdir():
+        dst = out / entry.name
+        shutil.copytree(entry, dst, symlinks=False) if entry.is_dir() else shutil.copy(entry, dst)
+    new_cfg = json.loads((out / "tokenizer_config.json").read_text())
+    new_cfg.pop("fix_mistral_regex", None)
+    (out / "tokenizer_config.json").write_text(json.dumps(new_cfg))
+    return str(out)
+
+
+def _register_qwen_omni_thinker() -> None:
+    """Register the qwen2_5_omni_thinker config alias used by some Omni-Thinker checkpoints."""
+    try:
+        from transformers import (
+            Qwen2_5OmniThinkerConfig,
+            Qwen2_5OmniThinkerForConditionalGeneration,
+        )
+        from transformers.models.auto import CONFIG_MAPPING, MODEL_MAPPING
+        from transformers.models.auto.modeling_auto import MODEL_FOR_MULTIMODAL_LM_MAPPING
+        CONFIG_MAPPING.register("qwen2_5_omni_thinker", Qwen2_5OmniThinkerConfig, exist_ok=True)
+        MODEL_MAPPING.register(
+            Qwen2_5OmniThinkerConfig, Qwen2_5OmniThinkerForConditionalGeneration, exist_ok=True
+        )
+        MODEL_FOR_MULTIMODAL_LM_MAPPING.register(
+            Qwen2_5OmniThinkerConfig, Qwen2_5OmniThinkerForConditionalGeneration, exist_ok=True
+        )
+    except Exception:
+        pass
+
+
+def clap_similarity_table(
+    model_path: str,
+    rows: list[dict[str, Any]],
+    *,
+    device: str,
+    dtype: str,
+    audio_batch_size: int,
+    text_batch_size: int,
+    max_seconds: float,
+) -> dict[tuple[str, str], float]:
+    """In-process CLAP scorer: load a SentenceTransformer, return ``{(audio_path, prompt): cos}``.
+
+    Only audios that resolve on disk are encoded; missing audios remain absent
+    from the table and surface as ``audio_missing`` in :func:`evaluate_rows`.
+    """
+    import librosa
+    import torch
+    import torch.nn.functional as F
+    from sentence_transformers import SentenceTransformer
+
+    if torch.cuda.is_available():
+        torch.backends.cuda.enable_cudnn_sdp(False)
+    _register_qwen_omni_thinker()
+    snap = _patch_omni_snapshot(model_path)
+    torch_dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16, "float32": torch.float32}[dtype]
+    model = SentenceTransformer(
+        snap, trust_remote_code=True, device=device, model_kwargs={"torch_dtype": torch_dtype}
+    )
+    model.eval()
+
+    prompts = sorted({r["prompt"] for r in rows})
+    audio_paths = sorted(
+        {str(r["audio_path"]) for r in rows if r["audio_path"] is not None and r["audio_path"].exists()}
+    )
+    print(f"[clap] encoding {len(audio_paths)} audios, {len(prompts)} prompts on {device}", flush=True)
+
+    with torch.inference_mode():
+        text_emb = F.normalize(
+            model.encode(prompts, convert_to_tensor=True, batch_size=text_batch_size,
+                         show_progress_bar=False).float(),
+            dim=-1,
+        ).to(device)
+
+        max_samples = int(max_seconds * 16000)
+        audio_emb = torch.full(
+            (len(audio_paths), text_emb.shape[1]), float("nan"), device=device, dtype=torch.float32
+        )
+        for start in range(0, len(audio_paths), audio_batch_size):
+            chunk = audio_paths[start : start + audio_batch_size]
+            arrs: list[dict[str, Any]] = []
+            keep: list[int] = []
+            for j, p in enumerate(chunk):
+                try:
+                    arr, _ = librosa.load(p, sr=16000, mono=True)
+                except Exception as exc:
+                    print(f"[clap] decode {p}: {exc}", flush=True)
+                    continue
+                if arr.size > max_samples:
+                    arr = arr[:max_samples]
+                arrs.append({"array": arr.astype(np.float32), "sampling_rate": 16000})
+                keep.append(start + j)
+            if not arrs:
+                continue
+            embs = F.normalize(
+                model.encode(arrs, convert_to_tensor=True, batch_size=audio_batch_size,
+                             show_progress_bar=False).float(),
+                dim=-1,
+            ).to(device)
+            for j, dst in enumerate(keep):
+                audio_emb[dst] = embs[j]
+
+    sims = (audio_emb @ text_emb.T).cpu().numpy()
+    out: dict[tuple[str, str], float] = {}
+    for ai, ap in enumerate(audio_paths):
+        row = sims[ai]
+        for pi, pp in enumerate(prompts):
+            v = float(row[pi])
+            if not math.isnan(v):
+                out[(ap, pp)] = v
+    return out
+
+
+def voiceclap_small_similarity_table(
+    model_path: str,
+    rows: list[dict[str, Any]],
+    *,
+    device: str,
+    dtype: str,
+    audio_batch_size: int,
+    text_batch_size: int,
+    max_seconds: float,
+) -> dict[tuple[str, str], float]:
+    """In-process scorer for ``laion/voiceclap-small``.
+
+    The HF model exposes ``encode_waveform(wav)`` and ``encode_text(input_ids,
+    attention_mask)`` directly (both returning L2-normalised embeddings), so it
+    does not fit the SentenceTransformer interface used by
+    :func:`clap_similarity_table`. This wrapper mirrors that function's
+    signature so :func:`run_subset` can dispatch transparently.
+    """
+    import librosa
+    import torch
+    from transformers import AutoModel, AutoTokenizer
+
+    if torch.cuda.is_available():
+        torch.backends.cuda.enable_cudnn_sdp(False)
+    torch_dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16, "float32": torch.float32}[dtype]
+    model = AutoModel.from_pretrained(
+        model_path, trust_remote_code=True, torch_dtype=torch_dtype
+    ).to(device).eval()
+    tok = AutoTokenizer.from_pretrained(model_path)
+
+    prompts = sorted({r["prompt"] for r in rows})
+    audio_paths = sorted(
+        {str(r["audio_path"]) for r in rows if r["audio_path"] is not None and r["audio_path"].exists()}
+    )
+    print(
+        f"[voiceclap-small] encoding {len(audio_paths)} audios, {len(prompts)} prompts on {device}",
+        flush=True,
+    )
+
+    with torch.inference_mode():
+        text_chunks: list[torch.Tensor] = []
+        for start in range(0, len(prompts), text_batch_size):
+            chunk = prompts[start : start + text_batch_size]
+            enc = tok(chunk, padding=True, truncation=True, return_tensors="pt").to(device)
+            embs = model.encode_text(enc["input_ids"], enc.get("attention_mask"))
+            text_chunks.append(embs.float())
+        text_emb = torch.cat(text_chunks, dim=0) if text_chunks else torch.empty(0, device=device)
+
+        max_samples = int(max_seconds * 16000)
+        embed_dim = text_emb.shape[1] if text_emb.numel() else 0
+        audio_emb = torch.full(
+            (len(audio_paths), embed_dim), float("nan"), device=device, dtype=torch.float32
+        )
+        for start in range(0, len(audio_paths), audio_batch_size):
+            chunk = audio_paths[start : start + audio_batch_size]
+            wavs: list[torch.Tensor] = []
+            keep: list[int] = []
+            for j, p in enumerate(chunk):
+                try:
+                    arr, _ = librosa.load(p, sr=16000, mono=True)
+                except Exception as exc:
+                    print(f"[voiceclap-small] decode {p}: {exc}", flush=True)
+                    continue
+                if arr.size > max_samples:
+                    arr = arr[:max_samples]
+                wavs.append(torch.as_tensor(arr.astype(np.float32)))
+                keep.append(start + j)
+            if not wavs:
+                continue
+            max_len = max(w.shape[0] for w in wavs)
+            batch = torch.zeros(len(wavs), max_len, dtype=torch.float32)
+            for k, w in enumerate(wavs):
+                batch[k, : w.shape[0]] = w
+            embs = model.encode_waveform(batch.to(device)).float()
+            for j, dst in enumerate(keep):
+                audio_emb[dst] = embs[j]
+
+    sims = (audio_emb @ text_emb.T).cpu().numpy() if embed_dim else np.empty((0, 0))
+    out: dict[tuple[str, str], float] = {}
+    for ai, ap in enumerate(audio_paths):
+        if not embed_dim:
+            break
+        row = sims[ai]
+        for pi, pp in enumerate(prompts):
+            v = float(row[pi])
+            if not math.isnan(v):
+                out[(ap, pp)] = v
+    return out
 
 
 def post_similarity(
@@ -284,6 +509,7 @@ def evaluate_rows(
     rows: list[dict[str, Any]],
     *,
     endpoint: str | None,
+    clap_table: dict[tuple[str, str], float] | None,
     threshold: float,
     timeout: float,
     send_audio: bool,
@@ -302,10 +528,14 @@ def evaluate_rows(
             records.append(record)
             continue
         try:
-            if endpoint is None:
-                sim = sham_similarity(r["stem"], r["prompt"])
-            else:
+            if clap_table is not None:
+                sim = clap_table.get((str(path), r["prompt"]))
+                if sim is None:
+                    raise KeyError("missing CLAP similarity for (audio, prompt)")
+            elif endpoint is not None:
                 sim = post_similarity(endpoint, r["prompt"], path, timeout, send_audio)
+            else:
+                sim = sham_similarity(r["stem"], r["prompt"])
             pred = 1 if sim >= threshold else 0
             record.update({"similarity": sim, "pred_present": pred, "ok": True, "error": ""})
         except Exception as exc:
@@ -538,6 +768,13 @@ def run_subset(
     dataset_root: Path,
     analysis_root: Path,
     endpoint: str | None,
+    clap_model: str | None,
+    voiceclap_small_model: str | None,
+    clap_device: str,
+    clap_dtype: str,
+    clap_audio_batch_size: int,
+    clap_text_batch_size: int,
+    clap_max_seconds: float,
     threshold: float,
     timeout: float,
     limit: int | None,
@@ -588,9 +825,32 @@ def run_subset(
         variables = load_dim_variables(dataset_root / "emolia-dim" / "variables.json")
         rows = dim_iter(labels, dataset_root, variables)
 
+    clap_table: dict[tuple[str, str], float] | None = None
+    if clap_model:
+        clap_table = clap_similarity_table(
+            clap_model,
+            rows,
+            device=clap_device,
+            dtype=clap_dtype,
+            audio_batch_size=clap_audio_batch_size,
+            text_batch_size=clap_text_batch_size,
+            max_seconds=clap_max_seconds,
+        )
+    elif voiceclap_small_model:
+        clap_table = voiceclap_small_similarity_table(
+            voiceclap_small_model,
+            rows,
+            device=clap_device,
+            dtype=clap_dtype,
+            audio_batch_size=clap_audio_batch_size,
+            text_batch_size=clap_text_batch_size,
+            max_seconds=clap_max_seconds,
+        )
+
     predictions, missing, errors = evaluate_rows(
         rows,
         endpoint=endpoint,
+        clap_table=clap_table,
         threshold=threshold,
         timeout=timeout,
         send_audio=send_audio,
@@ -610,11 +870,21 @@ def run_subset(
             f"exclude_flagged={exclude_flagged}, unanimous_only={unanimous_only}"
         )
 
+    if clap_model:
+        mode = "clap_inproc"
+    elif voiceclap_small_model:
+        mode = "voiceclap_small"
+    elif endpoint:
+        mode = "remote"
+    else:
+        mode = "sham_hash"
     rubric_lines = score_rubric(majority_rate, human_numbers)
     summary: dict[str, Any] = {
         "subset": subset,
-        "mode": "remote" if endpoint else "sham_hash",
+        "mode": mode,
         "endpoint": endpoint,
+        "clap_model": clap_model,
+        "voiceclap_small_model": voiceclap_small_model,
         "threshold": threshold,
         "filter_mode": filter_mode,
         "filter_stats": filter_stats,
@@ -640,6 +910,21 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     p.add_argument("--endpoint", type=str, default=None,
                    help="Full URL for POST. Omit for the deterministic sham scorer.")
+    p.add_argument("--clap-model", type=str, default=None,
+                   help="Local snapshot path or HF repo id of a SentenceTransformer audio-text "
+                        "model. Loaded in-process; mutually exclusive with --endpoint.")
+    p.add_argument("--model", choices=tuple(VOICECLAP_HF_REPOS), default=None,
+                   help="Shortcut for the published VoiceCLAP HF models — picks the right "
+                        "in-process backend (SentenceTransformer for voiceclap-large, "
+                        "AutoModel for voiceclap-small).")
+    p.add_argument("--clap-device", type=str, default="cuda",
+                   help="Device for --clap-model / --model (default cuda).")
+    p.add_argument("--clap-dtype", choices=("bfloat16", "float16", "float32"), default="bfloat16",
+                   help="Dtype for --clap-model / --model (default bfloat16).")
+    p.add_argument("--clap-audio-batch-size", type=int, default=8)
+    p.add_argument("--clap-text-batch-size", type=int, default=8)
+    p.add_argument("--clap-max-seconds", type=float, default=30.0,
+                   help="Truncate audio to this many seconds before encoding.")
     p.add_argument("--threshold", type=float, default=0.0,
                    help="Predict positive if similarity >= threshold.")
     p.add_argument("--timeout", type=float, default=120.0)
@@ -663,7 +948,19 @@ def parse_args() -> argparse.Namespace:
                         "agreed (benchmark_bucket starts with `unanimous_`).")
     p.add_argument("--require-3-raters", action="store_true",
                    help="Shortcut for --min-raters 3 (kept for backward compatibility).")
-    return p.parse_args()
+    args = p.parse_args()
+    if args.endpoint and args.clap_model:
+        p.error("--endpoint and --clap-model are mutually exclusive")
+    args.voiceclap_small_model = None
+    if args.model:
+        if args.endpoint or args.clap_model:
+            p.error("--model is mutually exclusive with --endpoint and --clap-model")
+        repo = VOICECLAP_HF_REPOS[args.model]
+        if args.model == "voiceclap-small":
+            args.voiceclap_small_model = repo
+        else:
+            args.clap_model = repo
+    return args
 
 
 def main() -> None:
@@ -678,6 +975,13 @@ def main() -> None:
             dataset_root=args.dataset_root,
             analysis_root=args.analysis_root,
             endpoint=args.endpoint,
+            clap_model=args.clap_model,
+            voiceclap_small_model=args.voiceclap_small_model,
+            clap_device=args.clap_device,
+            clap_dtype=args.clap_dtype,
+            clap_audio_batch_size=args.clap_audio_batch_size,
+            clap_text_batch_size=args.clap_text_batch_size,
+            clap_max_seconds=args.clap_max_seconds,
             threshold=args.threshold,
             timeout=args.timeout,
             limit=args.limit,
