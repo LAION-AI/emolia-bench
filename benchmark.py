@@ -262,7 +262,14 @@ def voiceclap_small_similarity_table(
 
     if torch.cuda.is_available():
         torch.backends.cuda.enable_cudnn_sdp(False)
-    torch_dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16, "float32": torch.float32}[dtype]
+    # voiceclap-small has hardcoded ``x.float()`` casts inside its LayerNorm
+    # blocks. With bf16/fp16 weights those casts produce a dtype mismatch
+    # against the still-low-precision LayerNorm parameters. The model is
+    # small (~300M params) so fp32 is the simplest correct choice and matches
+    # the model's reference loading pattern.
+    if dtype != "float32":
+        print(f"[voiceclap-small] forcing dtype=float32 (requested {dtype} unsupported by model)", flush=True)
+    torch_dtype = torch.float32
     model = AutoModel.from_pretrained(
         model_path, trust_remote_code=True, torch_dtype=torch_dtype
     ).to(device).eval()
@@ -311,7 +318,12 @@ def voiceclap_small_similarity_table(
             batch = torch.zeros(len(wavs), max_len, dtype=torch.float32)
             for k, w in enumerate(wavs):
                 batch[k, : w.shape[0]] = w
-            embs = model.encode_waveform(batch.to(device)).float()
+            # ``encode_waveform`` would compute log-mel in fp32 then feed it
+            # straight into the (bf16/fp16) audio encoder, which raises a
+            # dtype mismatch. Do the two steps explicitly so we can cast the
+            # mel into the model's dtype in between.
+            mel = model.compute_log_mel(batch.to(device=device, dtype=torch.float32), sample_rate=16000)
+            embs = model.encode_audio(mel.to(dtype=torch_dtype)).float()
             for j, dst in enumerate(keep):
                 audio_emb[dst] = embs[j]
 
