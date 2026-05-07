@@ -46,8 +46,10 @@
     "human_loo_n_annotations": 13208.0
   },
   "augmented_agreement": {
-    "preselection_pairwise_accuracy": 0.6022050726311887,
-    "preselection_pairwise_balanced_accuracy": 0.6095881168015719,
+    "preselection_min_humans": 2,
+    "preselection_n_eligible_items": 7986,
+    "preselection_pairwise_accuracy": 0.6022346145194325,
+    "preselection_pairwise_balanced_accuracy": 0.609613039687365,
     "preselection_loo_accuracy": 0.6349946778536096,
     "preselection_loo_balanced_accuracy": 0.6316910074474198,
     "preselection_loo_n_annotations": 31942.0,
