@@ -4,17 +4,17 @@
     "no",
     "yes"
   ],
-  "rows_raw": 30798,
-  "rows_deduplicated": 30798,
+  "rows_raw": 34097,
+  "rows_deduplicated": 34097,
   "items_total": 18632,
-  "items_complete": 868,
-  "items_incomplete": 17764,
-  "items_flagged": 33,
+  "items_complete": 1366,
+  "items_incomplete": 17266,
+  "items_flagged": 37,
   "rater_coverage": {
-    "1": 7400,
-    "2": 10331,
-    "3": 868,
-    "4": 33
+    "1": 4647,
+    "2": 12562,
+    "3": 1366,
+    "4": 57
   },
   "annotators": [
     "user_0",
@@ -27,483 +27,523 @@
     "user_8"
   ],
   "agreement": {
-    "exact_3way_binary": 0.2557603686635945,
-    "pairwise_exact_binary": 0.05398288347597102,
+    "exact_3way_binary": 0.24597364568081992,
+    "pairwise_exact_binary": 0.05328383183434428,
     "pairwise_binary_kappa": {
-      "user_0__user_1": 0.27325581395348836,
-      "user_0__user_2": 0.10526315789473695,
-      "user_0__user_3": 0.024090029892737883,
-      "user_0__user_4": -0.10062893081761,
-      "user_0__user_5": 0.038221852928957155,
-      "user_0__user_6": -0.014984950219958423,
-      "user_0__user_8": 0.309623430962343,
+      "user_0__user_1": 0.052362707535121435,
+      "user_0__user_2": 0.08,
+      "user_0__user_3": 0.02018005340838221,
+      "user_0__user_4": 0.2222222222222223,
+      "user_0__user_5": 0.015947329919531843,
+      "user_0__user_6": -0.011108417995308345,
+      "user_0__user_8": 0.2677165354330709,
       "user_1__user_2": NaN,
-      "user_1__user_3": 0.608695652173913,
+      "user_1__user_3": 0.5833333333333333,
       "user_1__user_4": NaN,
-      "user_1__user_5": 0.0,
+      "user_1__user_5": -0.08344549125168237,
       "user_1__user_6": 0.39999999999999997,
       "user_1__user_8": NaN,
-      "user_2__user_3": 0.04469273743016761,
+      "user_2__user_3": -0.18181818181818177,
       "user_2__user_4": NaN,
-      "user_2__user_5": 0.5263157894736842,
+      "user_2__user_5": 0.189873417721519,
       "user_2__user_6": -0.36363636363636376,
       "user_2__user_8": NaN,
-      "user_3__user_4": -0.25316455696202544,
-      "user_3__user_5": -0.05989430416911336,
-      "user_3__user_6": 0.0004247727465804789,
-      "user_3__user_8": 0.05555555555555552,
-      "user_4__user_5": 0.0,
+      "user_3__user_4": -0.024242424242424135,
+      "user_3__user_5": -0.05037874450865658,
+      "user_3__user_6": 0.015245473444801826,
+      "user_3__user_8": 0.05405405405405396,
+      "user_4__user_5": 0.10370370370370358,
       "user_4__user_6": NaN,
       "user_4__user_8": NaN,
-      "user_5__user_6": 0.18255372945638434,
-      "user_5__user_8": -0.4285714285714287,
+      "user_5__user_6": 0.0415011037527593,
+      "user_5__user_8": -0.2631578947368421,
       "user_6__user_8": -0.1666666666666665,
-      "mean": 0.05624501530597058
+      "mean": 0.04293741665106543
     },
-    "fleiss_binary_kappa": -0.0006787452789724964,
-    "human_pairwise_accuracy": 0.5545603970882631,
-    "human_pairwise_balanced_accuracy": 0.5358498954475968,
-    "human_loo_accuracy": 0.5090027700831025,
-    "human_loo_balanced_accuracy": 0.5028146051558987,
-    "human_loo_n_annotations": 1444.0
+    "fleiss_binary_kappa": -0.020315468332907687,
+    "human_pairwise_accuracy": 0.5492765874608468,
+    "human_pairwise_balanced_accuracy": 0.5326101329230652,
+    "human_loo_accuracy": 0.499558693733451,
+    "human_loo_balanced_accuracy": 0.48648488074166674,
+    "human_loo_n_annotations": 2266.0
   },
   "augmented_agreement": {
-    "preselection_pairwise_accuracy": 0.5654036254915625,
-    "preselection_pairwise_balanced_accuracy": 0.5535790182948477,
-    "preselection_loo_accuracy": 0.5928595454327038,
-    "preselection_loo_balanced_accuracy": 0.5913109170873097,
-    "preselection_loo_n_annotations": 20811.0,
+    "preselection_pairwise_accuracy": 0.5608447845150214,
+    "preselection_pairwise_balanced_accuracy": 0.5503276299360043,
+    "preselection_loo_accuracy": 0.5896238846428975,
+    "preselection_loo_balanced_accuracy": 0.5868108607969436,
+    "preselection_loo_n_annotations": 26561.0,
     "preselection_fleiss_kappa": NaN,
     "preselection_n_full_coverage_items": 0,
-    "gemini_vs_human_consensus_accuracy": 0.6604743738596782,
-    "gemini_vs_human_consensus_balanced_accuracy": 0.6723684745341535,
-    "gemini_vs_human_consensus_n_items": 6029.0
+    "gemini_vs_human_consensus_accuracy": 0.6544031311154599,
+    "gemini_vs_human_consensus_balanced_accuracy": 0.6678115597267029,
+    "gemini_vs_human_consensus_n_items": 7665.0
   },
-  "majority_yes_rate": 0.2549377415199657,
-  "polarity_match_rate": 0.6060004293688278,
+  "majority_yes_rate": 0.24001717475311293,
+  "polarity_match_rate": 0.5962322885358523,
   "dimensions": [
     {
       "dimension": "REGS",
       "items": 350,
-      "majority_yes_rate": 0.18285714285714286,
-      "unanimous_rate": 0.26285714285714284,
-      "polarity_match_rate": 0.5857142857142857
+      "majority_yes_rate": 0.17142857142857143,
+      "unanimous_rate": 0.32285714285714284,
+      "polarity_match_rate": 0.58
     },
     {
       "dimension": "VULN",
       "items": 350,
-      "majority_yes_rate": 0.28285714285714286,
-      "unanimous_rate": 0.30857142857142855,
-      "polarity_match_rate": 0.5771428571428572
+      "majority_yes_rate": 0.2542857142857143,
+      "unanimous_rate": 0.36,
+      "polarity_match_rate": 0.5657142857142857
     },
     {
       "dimension": "ARSH",
       "items": 350,
-      "majority_yes_rate": 0.19142857142857142,
-      "unanimous_rate": 0.31142857142857144,
-      "polarity_match_rate": 0.6114285714285714
+      "majority_yes_rate": 0.1742857142857143,
+      "unanimous_rate": 0.37142857142857144,
+      "polarity_match_rate": 0.5942857142857143
     },
     {
       "dimension": "ATCK",
       "items": 350,
-      "majority_yes_rate": 0.3485714285714286,
-      "unanimous_rate": 0.3457142857142857,
-      "polarity_match_rate": 0.6428571428571429
+      "majority_yes_rate": 0.32,
+      "unanimous_rate": 0.4085714285714286,
+      "polarity_match_rate": 0.6371428571428571
     },
     {
       "dimension": "S_MONO",
       "items": 350,
-      "majority_yes_rate": 0.34,
-      "unanimous_rate": 0.3142857142857143,
-      "polarity_match_rate": 0.64
+      "majority_yes_rate": 0.3171428571428571,
+      "unanimous_rate": 0.3942857142857143,
+      "polarity_match_rate": 0.6228571428571429
     },
     {
       "dimension": "S_DRAM",
       "items": 350,
-      "majority_yes_rate": 0.24285714285714285,
-      "unanimous_rate": 0.2914285714285714,
-      "polarity_match_rate": 0.6228571428571429
+      "majority_yes_rate": 0.22285714285714286,
+      "unanimous_rate": 0.35714285714285715,
+      "polarity_match_rate": 0.6314285714285715
     },
     {
       "dimension": "S_PLAY",
       "items": 350,
-      "majority_yes_rate": 0.22285714285714286,
-      "unanimous_rate": 0.26857142857142857,
-      "polarity_match_rate": 0.62
+      "majority_yes_rate": 0.21428571428571427,
+      "unanimous_rate": 0.3514285714285714,
+      "polarity_match_rate": 0.6114285714285714
     },
     {
       "dimension": "S_RANT",
       "items": 350,
-      "majority_yes_rate": 0.26,
-      "unanimous_rate": 0.3,
-      "polarity_match_rate": 0.6514285714285715
+      "majority_yes_rate": 0.24285714285714285,
+      "unanimous_rate": 0.35428571428571426,
+      "polarity_match_rate": 0.6342857142857142
     },
     {
       "dimension": "S_WHIS",
       "items": 350,
-      "majority_yes_rate": 0.26,
-      "unanimous_rate": 0.3,
-      "polarity_match_rate": 0.64
+      "majority_yes_rate": 0.25142857142857145,
+      "unanimous_rate": 0.3742857142857143,
+      "polarity_match_rate": 0.6428571428571429
     },
     {
       "dimension": "GEND",
       "items": 350,
-      "majority_yes_rate": 0.19714285714285715,
-      "unanimous_rate": 0.2542857142857143,
-      "polarity_match_rate": 0.6342857142857142
+      "majority_yes_rate": 0.18857142857142858,
+      "unanimous_rate": 0.3171428571428571,
+      "polarity_match_rate": 0.6142857142857143
     },
     {
       "dimension": "VFLX",
       "items": 350,
-      "majority_yes_rate": 0.12571428571428572,
-      "unanimous_rate": 0.29714285714285715,
-      "polarity_match_rate": 0.5514285714285714
+      "majority_yes_rate": 0.12,
+      "unanimous_rate": 0.35714285714285715,
+      "polarity_match_rate": 0.5457142857142857
     },
     {
       "dimension": "AGEV",
       "items": 349,
-      "majority_yes_rate": 0.2664756446991404,
-      "unanimous_rate": 0.28939828080229224,
-      "polarity_match_rate": 0.6045845272206304
+      "majority_yes_rate": 0.24068767908309455,
+      "unanimous_rate": 0.3524355300859599,
+      "polarity_match_rate": 0.5902578796561605
     },
     {
       "dimension": "S_CART",
       "items": 347,
-      "majority_yes_rate": 0.2968299711815562,
-      "unanimous_rate": 0.3025936599423631,
-      "polarity_match_rate": 0.6714697406340058
+      "majority_yes_rate": 0.2680115273775216,
+      "unanimous_rate": 0.3659942363112392,
+      "polarity_match_rate": 0.6426512968299711
     },
     {
       "dimension": "RESP",
       "items": 344,
-      "majority_yes_rate": 0.31976744186046513,
-      "unanimous_rate": 0.3168604651162791,
-      "polarity_match_rate": 0.6308139534883721
+      "majority_yes_rate": 0.29069767441860467,
+      "unanimous_rate": 0.36627906976744184,
+      "polarity_match_rate": 0.6133720930232558
     },
     {
       "dimension": "VALN",
       "items": 343,
-      "majority_yes_rate": 0.27113702623906705,
-      "unanimous_rate": 0.2944606413994169,
-      "polarity_match_rate": 0.6326530612244898
+      "majority_yes_rate": 0.2594752186588921,
+      "unanimous_rate": 0.36151603498542273,
+      "polarity_match_rate": 0.6268221574344023
     },
     {
       "dimension": "AROU",
       "items": 343,
-      "majority_yes_rate": 0.22448979591836735,
-      "unanimous_rate": 0.2915451895043732,
-      "polarity_match_rate": 0.60932944606414
+      "majority_yes_rate": 0.21865889212827988,
+      "unanimous_rate": 0.36443148688046645,
+      "polarity_match_rate": 0.597667638483965
     },
     {
       "dimension": "STNC",
       "items": 342,
-      "majority_yes_rate": 0.32748538011695905,
-      "unanimous_rate": 0.30116959064327486,
-      "polarity_match_rate": 0.6929824561403509
+      "majority_yes_rate": 0.28362573099415206,
+      "unanimous_rate": 0.34502923976608185,
+      "polarity_match_rate": 0.6549707602339181
     },
     {
       "dimension": "S_FORM",
       "items": 342,
-      "majority_yes_rate": 0.30994152046783624,
-      "unanimous_rate": 0.26900584795321636,
-      "polarity_match_rate": 0.6929824561403509
+      "majority_yes_rate": 0.28654970760233917,
+      "unanimous_rate": 0.347953216374269,
+      "polarity_match_rate": 0.6754385964912281
     },
     {
       "dimension": "FOCS",
       "items": 341,
-      "majority_yes_rate": 0.21407624633431085,
-      "unanimous_rate": 0.23460410557184752,
-      "polarity_match_rate": 0.5483870967741935
+      "majority_yes_rate": 0.21114369501466276,
+      "unanimous_rate": 0.2991202346041056,
+      "polarity_match_rate": 0.5454545454545454
     },
     {
       "dimension": "DFLU",
       "items": 340,
-      "majority_yes_rate": 0.3,
-      "unanimous_rate": 0.3235294117647059,
-      "polarity_match_rate": 0.6558823529411765
+      "majority_yes_rate": 0.28823529411764703,
+      "unanimous_rate": 0.4117647058823529,
+      "polarity_match_rate": 0.638235294117647
     },
     {
       "dimension": "S_NEWS",
       "items": 340,
-      "majority_yes_rate": 0.31176470588235294,
-      "unanimous_rate": 0.3411764705882353,
-      "polarity_match_rate": 0.6617647058823529
+      "majority_yes_rate": 0.27941176470588236,
+      "unanimous_rate": 0.38529411764705884,
+      "polarity_match_rate": 0.6647058823529411
     },
     {
       "dimension": "R_HEAD",
       "items": 340,
-      "majority_yes_rate": 0.21764705882352942,
-      "unanimous_rate": 0.2911764705882353,
-      "polarity_match_rate": 0.5441176470588235
+      "majority_yes_rate": 0.2088235294117647,
+      "unanimous_rate": 0.38235294117647056,
+      "polarity_match_rate": 0.5294117647058824
     },
     {
       "dimension": "S_AUTH",
       "items": 338,
-      "majority_yes_rate": 0.27218934911242604,
-      "unanimous_rate": 0.28402366863905326,
-      "polarity_match_rate": 0.6775147928994083
+      "majority_yes_rate": 0.257396449704142,
+      "unanimous_rate": 0.3668639053254438,
+      "polarity_match_rate": 0.6686390532544378
     },
     {
       "dimension": "R_THRT",
       "items": 336,
-      "majority_yes_rate": 0.24107142857142858,
-      "unanimous_rate": 0.26785714285714285,
-      "polarity_match_rate": 0.6071428571428571
+      "majority_yes_rate": 0.22321428571428573,
+      "unanimous_rate": 0.3333333333333333,
+      "polarity_match_rate": 0.5833333333333334
     },
     {
       "dimension": "S_STRY",
       "items": 335,
-      "majority_yes_rate": 0.3074626865671642,
-      "unanimous_rate": 0.31044776119402984,
-      "polarity_match_rate": 0.6686567164179105
+      "majority_yes_rate": 0.29850746268656714,
+      "unanimous_rate": 0.40298507462686567,
+      "polarity_match_rate": 0.6716417910447762
     },
     {
       "dimension": "S_ASMR",
       "items": 333,
-      "majority_yes_rate": 0.23423423423423423,
-      "unanimous_rate": 0.32432432432432434,
-      "polarity_match_rate": 0.6336336336336337
+      "majority_yes_rate": 0.2222222222222222,
+      "unanimous_rate": 0.38738738738738737,
+      "polarity_match_rate": 0.6156156156156156
     },
     {
       "dimension": "S_CONV",
       "items": 333,
-      "majority_yes_rate": 0.2852852852852853,
-      "unanimous_rate": 0.2912912912912913,
-      "polarity_match_rate": 0.6456456456456456
+      "majority_yes_rate": 0.26126126126126126,
+      "unanimous_rate": 0.35135135135135137,
+      "polarity_match_rate": 0.6396396396396397
     },
     {
       "dimension": "CLRT",
       "items": 332,
-      "majority_yes_rate": 0.28313253012048195,
-      "unanimous_rate": 0.3102409638554217,
-      "polarity_match_rate": 0.5813253012048193
+      "majority_yes_rate": 0.27710843373493976,
+      "unanimous_rate": 0.3855421686746988,
+      "polarity_match_rate": 0.5753012048192772
     },
     {
       "dimension": "R_MASK",
       "items": 332,
-      "majority_yes_rate": 0.2319277108433735,
-      "unanimous_rate": 0.33433734939759036,
-      "polarity_match_rate": 0.6204819277108434
+      "majority_yes_rate": 0.2289156626506024,
+      "unanimous_rate": 0.3644578313253012,
+      "polarity_match_rate": 0.6174698795180723
     },
     {
       "dimension": "S_NARR",
       "items": 329,
-      "majority_yes_rate": 0.2553191489361702,
-      "unanimous_rate": 0.2887537993920973,
-      "polarity_match_rate": 0.6413373860182371
+      "majority_yes_rate": 0.24924012158054712,
+      "unanimous_rate": 0.3465045592705167,
+      "polarity_match_rate": 0.6352583586626139
     },
     {
       "dimension": "DARC",
       "items": 329,
       "majority_yes_rate": 0.17325227963525835,
-      "unanimous_rate": 0.2735562310030395,
-      "polarity_match_rate": 0.5562310030395137
+      "unanimous_rate": 0.3282674772036474,
+      "polarity_match_rate": 0.5623100303951368
     },
     {
       "dimension": "VALS",
       "items": 328,
       "majority_yes_rate": 0.17378048780487804,
-      "unanimous_rate": 0.27134146341463417,
-      "polarity_match_rate": 0.5548780487804879
+      "unanimous_rate": 0.32621951219512196,
+      "polarity_match_rate": 0.5487804878048781
     },
     {
       "dimension": "S_TECH",
       "items": 322,
-      "majority_yes_rate": 0.2670807453416149,
-      "unanimous_rate": 0.2981366459627329,
-      "polarity_match_rate": 0.5993788819875776
+      "majority_yes_rate": 0.2577639751552795,
+      "unanimous_rate": 0.36645962732919257,
+      "polarity_match_rate": 0.5900621118012422
     },
     {
       "dimension": "METL",
       "items": 322,
       "majority_yes_rate": 0.20186335403726707,
-      "unanimous_rate": 0.2950310559006211,
-      "polarity_match_rate": 0.577639751552795
+      "unanimous_rate": 0.36645962732919257,
+      "polarity_match_rate": 0.5714285714285714
     },
     {
       "dimension": "CHNK",
       "items": 321,
-      "majority_yes_rate": 0.2554517133956386,
-      "unanimous_rate": 0.2585669781931464,
-      "polarity_match_rate": 0.5482866043613707
+      "majority_yes_rate": 0.22118380062305296,
+      "unanimous_rate": 0.3177570093457944,
+      "polarity_match_rate": 0.5389408099688473
     },
     {
       "dimension": "BRGT",
       "items": 320,
-      "majority_yes_rate": 0.26875,
-      "unanimous_rate": 0.25625,
-      "polarity_match_rate": 0.553125
+      "majority_yes_rate": 0.25,
+      "unanimous_rate": 0.315625,
+      "polarity_match_rate": 0.559375
     },
     {
       "dimension": "COGL",
       "items": 320,
-      "majority_yes_rate": 0.28125,
-      "unanimous_rate": 0.278125,
-      "polarity_match_rate": 0.596875
+      "majority_yes_rate": 0.26875,
+      "unanimous_rate": 0.353125,
+      "polarity_match_rate": 0.578125
     },
     {
       "dimension": "R_CHST",
       "items": 320,
-      "majority_yes_rate": 0.284375,
-      "unanimous_rate": 0.259375,
-      "polarity_match_rate": 0.58125
+      "majority_yes_rate": 0.26875,
+      "unanimous_rate": 0.33125,
+      "polarity_match_rate": 0.565625
     },
     {
       "dimension": "R_MIXD",
       "items": 318,
-      "majority_yes_rate": 0.22955974842767296,
-      "unanimous_rate": 0.29559748427672955,
-      "polarity_match_rate": 0.5754716981132075
+      "majority_yes_rate": 0.2169811320754717,
+      "unanimous_rate": 0.3710691823899371,
+      "polarity_match_rate": 0.5691823899371069
     },
     {
       "dimension": "VOLT",
       "items": 318,
-      "majority_yes_rate": 0.29874213836477986,
-      "unanimous_rate": 0.330188679245283,
-      "polarity_match_rate": 0.5849056603773585
+      "majority_yes_rate": 0.3018867924528302,
+      "unanimous_rate": 0.4056603773584906,
+      "polarity_match_rate": 0.5880503144654088
     },
     {
       "dimension": "TEMP",
       "items": 318,
-      "majority_yes_rate": 0.20754716981132076,
-      "unanimous_rate": 0.279874213836478,
-      "polarity_match_rate": 0.5408805031446541
+      "majority_yes_rate": 0.20125786163522014,
+      "unanimous_rate": 0.36477987421383645,
+      "polarity_match_rate": 0.5345911949685535
     },
     {
       "dimension": "ESTH",
       "items": 317,
-      "majority_yes_rate": 0.2996845425867508,
-      "unanimous_rate": 0.30914826498422715,
-      "polarity_match_rate": 0.6246056782334385
+      "majority_yes_rate": 0.2807570977917981,
+      "unanimous_rate": 0.35646687697160884,
+      "polarity_match_rate": 0.61198738170347
     },
     {
       "dimension": "S_CASU",
       "items": 316,
-      "majority_yes_rate": 0.22784810126582278,
-      "unanimous_rate": 0.22151898734177214,
-      "polarity_match_rate": 0.6170886075949367
+      "majority_yes_rate": 0.20569620253164558,
+      "unanimous_rate": 0.28164556962025317,
+      "polarity_match_rate": 0.6075949367088608
     },
     {
       "dimension": "BKGN",
       "items": 315,
-      "majority_yes_rate": 0.2634920634920635,
-      "unanimous_rate": 0.3047619047619048,
-      "polarity_match_rate": 0.5936507936507937
+      "majority_yes_rate": 0.2507936507936508,
+      "unanimous_rate": 0.346031746031746,
+      "polarity_match_rate": 0.5746031746031746
     },
     {
       "dimension": "WARM",
       "items": 314,
-      "majority_yes_rate": 0.22929936305732485,
-      "unanimous_rate": 0.2070063694267516,
-      "polarity_match_rate": 0.5859872611464968
+      "majority_yes_rate": 0.20382165605095542,
+      "unanimous_rate": 0.27388535031847133,
+      "polarity_match_rate": 0.5923566878980892
     },
     {
       "dimension": "SMTH",
       "items": 314,
-      "majority_yes_rate": 0.28343949044585987,
-      "unanimous_rate": 0.27070063694267515,
-      "polarity_match_rate": 0.5987261146496815
+      "majority_yes_rate": 0.24203821656050956,
+      "unanimous_rate": 0.31210191082802546,
+      "polarity_match_rate": 0.5636942675159236
     },
     {
       "dimension": "HARM",
       "items": 313,
-      "majority_yes_rate": 0.17891373801916932,
-      "unanimous_rate": 0.28753993610223644,
-      "polarity_match_rate": 0.5559105431309904
+      "majority_yes_rate": 0.1597444089456869,
+      "unanimous_rate": 0.35782747603833864,
+      "polarity_match_rate": 0.549520766773163
     },
     {
       "dimension": "EMPH",
       "items": 313,
       "majority_yes_rate": 0.3003194888178914,
-      "unanimous_rate": 0.30990415335463256,
+      "unanimous_rate": 0.38977635782747605,
       "polarity_match_rate": 0.6325878594249201
     },
     {
       "dimension": "R_ORAL",
       "items": 311,
-      "majority_yes_rate": 0.21221864951768488,
-      "unanimous_rate": 0.3183279742765273,
+      "majority_yes_rate": 0.2057877813504823,
+      "unanimous_rate": 0.3954983922829582,
       "polarity_match_rate": 0.5498392282958199
     },
     {
       "dimension": "STRU",
       "items": 305,
-      "majority_yes_rate": 0.2754098360655738,
-      "unanimous_rate": 0.2786885245901639,
-      "polarity_match_rate": 0.6524590163934426
+      "majority_yes_rate": 0.2721311475409836,
+      "unanimous_rate": 0.3377049180327869,
+      "polarity_match_rate": 0.6491803278688525
     },
     {
       "dimension": "ROUG",
       "items": 303,
-      "majority_yes_rate": 0.2376237623762376,
-      "unanimous_rate": 0.264026402640264,
-      "polarity_match_rate": 0.6171617161716172
+      "majority_yes_rate": 0.22772277227722773,
+      "unanimous_rate": 0.3564356435643564,
+      "polarity_match_rate": 0.6138613861386139
     },
     {
       "dimension": "RANG",
       "items": 302,
-      "majority_yes_rate": 0.2582781456953642,
-      "unanimous_rate": 0.22185430463576158,
-      "polarity_match_rate": 0.5629139072847682
+      "majority_yes_rate": 0.24503311258278146,
+      "unanimous_rate": 0.2781456953642384,
+      "polarity_match_rate": 0.5695364238410596
     },
     {
       "dimension": "TENS",
       "items": 302,
-      "majority_yes_rate": 0.2682119205298013,
-      "unanimous_rate": 0.2814569536423841,
-      "polarity_match_rate": 0.6357615894039735
+      "majority_yes_rate": 0.24172185430463577,
+      "unanimous_rate": 0.3576158940397351,
+      "polarity_match_rate": 0.6026490066225165
     },
     {
       "dimension": "RCQL",
       "items": 286,
-      "majority_yes_rate": 0.2867132867132867,
-      "unanimous_rate": 0.25874125874125875,
-      "polarity_match_rate": 0.486013986013986
+      "majority_yes_rate": 0.2727272727272727,
+      "unanimous_rate": 0.34615384615384615,
+      "polarity_match_rate": 0.46503496503496505
     },
     {
       "dimension": "R_NASL",
       "items": 279,
-      "majority_yes_rate": 0.21505376344086022,
-      "unanimous_rate": 0.27956989247311825,
-      "polarity_match_rate": 0.6129032258064516
+      "majority_yes_rate": 0.2078853046594982,
+      "unanimous_rate": 0.36917562724014336,
+      "polarity_match_rate": 0.5985663082437276
     },
     {
       "dimension": "FULL",
       "items": 273,
-      "majority_yes_rate": 0.23809523809523808,
-      "unanimous_rate": 0.2783882783882784,
+      "majority_yes_rate": 0.23076923076923078,
+      "unanimous_rate": 0.34798534798534797,
       "polarity_match_rate": 0.5677655677655677
     },
     {
       "dimension": "EXPL",
       "items": 144,
-      "majority_yes_rate": 0.3333333333333333,
-      "unanimous_rate": 0.3263888888888889,
-      "polarity_match_rate": 0.6875
+      "majority_yes_rate": 0.3125,
+      "unanimous_rate": 0.4166666666666667,
+      "polarity_match_rate": 0.6666666666666666
     },
     {
       "dimension": "LANG",
       "items": 100,
-      "majority_yes_rate": 0.23,
-      "unanimous_rate": 0.22,
-      "polarity_match_rate": 0.23
+      "majority_yes_rate": 0.22,
+      "unanimous_rate": 0.25,
+      "polarity_match_rate": 0.22
     }
   ],
   "polarities": [
     {
       "polarity": "negative",
       "items": 9241,
-      "majority_yes_rate": 0.14608808570501028,
-      "unanimous_rate": 0.2805973379504383
+      "majority_yes_rate": 0.14089384265772104,
+      "unanimous_rate": 0.34877177794610975
     },
     {
       "polarity": "positive",
       "items": 9391,
-      "majority_yes_rate": 0.36204877009903097,
-      "unanimous_rate": 0.2954956873602385
+      "majority_yes_rate": 0.33755723565115536,
+      "unanimous_rate": 0.3603450111809179
     }
   ],
   "flags": [
+    {
+      "flag_id": "b5636fcb-c3b4-4ead-a1d4-288c400514f3",
+      "username": "user_1",
+      "dimension": "RCQL",
+      "level": 6,
+      "polarity": "negative",
+      "file_name": "sample_21.mp3",
+      "reason": "Discerption matches the first speaker",
+      "created_at": "2026-05-06 15:32:28"
+    },
+    {
+      "flag_id": "6aa56e4a-9737-40f4-9344-6aaf4485201f",
+      "username": "user_1",
+      "dimension": "R_MASK",
+      "level": 1,
+      "polarity": "negative",
+      "file_name": "sample_21.mp3",
+      "reason": "2 speakers, the description matches the first speaker",
+      "created_at": "2026-05-06 15:21:21"
+    },
+    {
+      "flag_id": "26ff5460-87dc-48ec-85ce-4a027bdb968c",
+      "username": "user_1",
+      "dimension": "ATCK",
+      "level": 2,
+      "polarity": "positive",
+      "file_name": "sample_19.mp3",
+      "reason": "No Audio at all",
+      "created_at": "2026-05-06 15:13:24"
+    },
+    {
+      "flag_id": "b17c6d03-a915-4ce4-8b8f-97484fad1441",
+      "username": "user_2",
+      "dimension": "STNC",
+      "level": 0,
+      "polarity": "positive",
+      "file_name": "sample_24.mp3",
+      "reason": "weird noises",
+      "created_at": "2026-05-06 14:38:35"
+    },
     {
       "flag_id": "827f324f-83db-4cd3-b2ab-60431121ec8e",
       "username": "user_1",
@@ -835,10 +875,10 @@
       "created_at": "2026-04-16 09:56:15"
     }
   ],
-  "human_upper_bound_binary": 0.05398288347597102,
-  "human_accuracy_binary": 0.5545603970882631,
-  "human_balanced_accuracy_binary": 0.5358498954475968,
-  "human_loo_accuracy_binary": 0.5090027700831025,
-  "human_loo_balanced_accuracy_binary": 0.5028146051558987,
-  "human_loo_n_annotations": 1444.0
+  "human_upper_bound_binary": 0.05328383183434428,
+  "human_accuracy_binary": 0.5492765874608468,
+  "human_balanced_accuracy_binary": 0.5326101329230652,
+  "human_loo_accuracy_binary": 0.499558693733451,
+  "human_loo_balanced_accuracy_binary": 0.48648488074166674,
+  "human_loo_n_annotations": 2266.0
 }

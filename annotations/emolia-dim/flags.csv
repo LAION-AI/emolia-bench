@@ -1,4 +1,8 @@
 flag_id,username,dimension,level,polarity,file_name,reason,created_at
+b5636fcb-c3b4-4ead-a1d4-288c400514f3,user_1,RCQL,6,negative,sample_21.mp3,Discerption matches the first speaker,2026-05-06 15:32:28
+6aa56e4a-9737-40f4-9344-6aaf4485201f,user_1,R_MASK,1,negative,sample_21.mp3,"2 speakers, the description matches the first speaker",2026-05-06 15:21:21
+26ff5460-87dc-48ec-85ce-4a027bdb968c,user_1,ATCK,2,positive,sample_19.mp3,No Audio at all,2026-05-06 15:13:24
+b17c6d03-a915-4ce4-8b8f-97484fad1441,user_2,STNC,0,positive,sample_24.mp3,weird noises,2026-05-06 14:38:35
 827f324f-83db-4cd3-b2ab-60431121ec8e,user_1,STNC,2,positive,sample_01.mp3,3 speakers,2026-05-06 11:04:05
 bc5a9ef3-6f69-4def-82d3-4ae6edf31f7a,user_1,R_HEAD,0,negative,sample_02.mp3,"3 speakers, the description matches the first speaker (the woman)",2026-05-06 10:41:59
 b2321077-07c0-49ab-9d0e-41edf747d98b,user_1,R_ORAL,0,positive,sample_07.mp3,Not speech it is mumbling,2026-05-06 10:25:06
