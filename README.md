@@ -94,6 +94,39 @@ Remote endpoint mode:
 uv run benchmark.py --endpoint http://127.0.0.1:8765/v1/similarity
 ```
 
+In-process CLAP mode (loads a SentenceTransformer audio-text model on GPU and
+scores in-process — no HTTP round-trip):
+
+```bash
+uv run benchmark.py \
+  --clap-model /path/to/snapshot_or_hf_repo \
+  --clap-device cuda --clap-dtype bfloat16
+```
+
+Published VoiceCLAP HF models have a `--model` shortcut that picks the right
+in-process backend (SentenceTransformer for `voiceclap-large`, AutoModel for
+`voiceclap-small`):
+
+```bash
+uv run benchmark.py --model voiceclap-small
+uv run benchmark.py --model voiceclap-large
+```
+
+In-process modes need `torch`, `sentence-transformers`, `transformers`, and
+`librosa`, declared as the `clap` extra:
+
+```bash
+uv sync --extra clap
+```
+
+CLAP-mode tuning flags (only active with `--clap-model` / `--model`):
+
+* `--clap-device cuda|cpu` (default `cuda`).
+* `--clap-dtype bfloat16|float16|float32` (default `bfloat16`).
+* `--clap-audio-batch-size N` (default 8).
+* `--clap-text-batch-size N` (default 8).
+* `--clap-max-seconds S` — truncate audio before encoding (default 30s).
+
 Useful flags:
 
 * `--subset emolia-emo|emolia-dim|both` (default `both`).
