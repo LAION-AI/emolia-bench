@@ -269,9 +269,8 @@ def voiceclap_small_similarity_table(
     # the model's reference loading pattern.
     if dtype != "float32":
         print(f"[voiceclap-small] forcing dtype=float32 (requested {dtype} unsupported by model)", flush=True)
-    torch_dtype = torch.float32
     model = AutoModel.from_pretrained(
-        model_path, trust_remote_code=True, torch_dtype=torch_dtype
+        model_path, trust_remote_code=True, torch_dtype=torch.float32
     ).to(device).eval()
     tok = AutoTokenizer.from_pretrained(model_path)
 
@@ -293,7 +292,21 @@ def voiceclap_small_similarity_table(
             text_chunks.append(embs.float())
         text_emb = torch.cat(text_chunks, dim=0) if text_chunks else torch.empty(0, device=device)
 
-        max_samples = int(max_seconds * 16000)
+        # voiceclap-small wraps Whisper-Small, which is trained on a fixed
+        # 30 s (480 000-sample @ 16 kHz) zero-padded window — the model's
+        # `_CHUNK_SAMPLES`. Anything shorter is zero-padded; anything longer
+        # is truncated to 30 s. Letting ``encode_waveform``'s chunk-and-average
+        # path fire inside a mixed-length batch would dilute short clips with
+        # silence-only chunks, so we cap the effective truncation at 30 s
+        # even if the user passes a larger `--clap-max-seconds`.
+        WINDOW_SAMPLES = 480_000
+        effective_max = min(int(max_seconds * 16000), WINDOW_SAMPLES)
+        if int(max_seconds * 16000) > WINDOW_SAMPLES:
+            print(
+                f"[voiceclap-small] capping --clap-max-seconds at 30 s "
+                f"(model's trained window); requested {max_seconds:g}s",
+                flush=True,
+            )
         embed_dim = text_emb.shape[1] if text_emb.numel() else 0
         audio_emb = torch.full(
             (len(audio_paths), embed_dim), float("nan"), device=device, dtype=torch.float32
@@ -308,22 +321,19 @@ def voiceclap_small_similarity_table(
                 except Exception as exc:
                     print(f"[voiceclap-small] decode {p}: {exc}", flush=True)
                     continue
-                if arr.size > max_samples:
-                    arr = arr[:max_samples]
+                if arr.size > effective_max:
+                    arr = arr[:effective_max]
                 wavs.append(torch.as_tensor(arr.astype(np.float32)))
                 keep.append(start + j)
             if not wavs:
                 continue
-            max_len = max(w.shape[0] for w in wavs)
-            batch = torch.zeros(len(wavs), max_len, dtype=torch.float32)
+            # Always pad to the full 30 s window — same shape every clip,
+            # every batch — so embeddings are batch-order-independent and
+            # match the published `encode_waveform`'s single-chunk path.
+            batch = torch.zeros(len(wavs), WINDOW_SAMPLES, dtype=torch.float32)
             for k, w in enumerate(wavs):
                 batch[k, : w.shape[0]] = w
-            # ``encode_waveform`` would compute log-mel in fp32 then feed it
-            # straight into the (bf16/fp16) audio encoder, which raises a
-            # dtype mismatch. Do the two steps explicitly so we can cast the
-            # mel into the model's dtype in between.
-            mel = model.compute_log_mel(batch.to(device=device, dtype=torch.float32), sample_rate=16000)
-            embs = model.encode_audio(mel.to(dtype=torch_dtype)).float()
+            embs = model.encode_waveform(batch.to(device), sample_rate=16000).float()
             for j, dst in enumerate(keep):
                 audio_emb[dst] = embs[j]
 
