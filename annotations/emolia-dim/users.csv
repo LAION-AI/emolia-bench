@@ -1,9 +1,16 @@
 username,is_active,is_admin,onboarded,annotation_count,created_at,age,gender,languages,listening_setup,degree,consent,expertise
-user_0,1,0,True,17641,2026-04-28T21:30:36.460Z,26,Female,"English,Spanish,Serbian",Headphones (on-ear),"Bachelor's degree in Psychology, Master's degree in Clinical and Counseling Psychology",True,5
-user_1,1,0,True,592,2026-05-04T11:37:01.833Z,27,Male,"English,Arabic",Headphones (over-ear),Bachelor of Laws (LL.B.) – Faculty of Law,True,4
-user_2,1,0,True,400,2026-05-03T15:22:57.033Z,19,Female,"English,German,Persian",Laptop speakers,B.Sc. Computer Science ,True,0
-user_3,1,0,True,5758,2026-04-28T22:43:00.945Z,33,Female,"English,Hindi",External speakers,Ms clinical psychology ,True,6
-user_4,1,0,True,555,2026-05-04T11:25:28.745Z,40,Female,English,Headphones (over-ear),Translation,True,0
-user_5,1,0,True,3595,2026-04-28T20:19:25.021Z,33,Male,"Spanish,English,Italian,French",Earbuds (wireless/ANC),Clinical psychology ,True,5
-user_6,1,0,True,5431,2026-05-03T15:22:01.960Z,29,Female,"English,Hindi,Punjabi,Urdu",Headphones (on-ear),BS Psychology ,True,9
-user_8,1,0,True,125,2026-05-03T21:21:21.750Z,21,Male,"English,German",Headphones (over-ear),Environmental science but no degree yet,True,0
+user_0,1,0,True,17641,2026-04-28T21:30:36.460Z,26.0,Female,"English,Spanish,Serbian",Headphones (on-ear),"Bachelor's degree in Psychology, Master's degree in Clinical and Counseling Psychology",True,5.0
+user_1,1,0,True,838,2026-05-04T11:37:01.833Z,27.0,Male,"English,Arabic",Headphones (over-ear),Bachelor of Laws (LL.B.) – Faculty of Law,True,4.0
+user_10,1,0,True,0,2026-05-03T13:59:04.759Z,34.0,Female,"German,Chinese",Earbuds (wired),B.Sc. Psychology,True,2.0
+user_11,1,0,False,0,2026-05-03T15:11:55.421Z,,,,,,,
+user_12,1,1,True,0,2026-04-16T09:55:41.375Z,34.0,Male,"German,English,Spanish,Italian,Polish",External speakers,MD,True,1.0
+user_13,1,0,True,125,2026-05-03T21:21:21.750Z,21.0,Male,"English,German",Headphones (over-ear),Environmental science but no degree yet,True,0.0
+user_14,1,0,True,0,2026-04-20T13:58:07.916Z,18.0,Male,German,Headphones (on-ear),psych,True,50.0
+user_2,1,0,False,0,2026-05-03T15:19:36.433Z,,,,,,,
+user_3,1,0,True,400,2026-05-03T15:22:57.033Z,19.0,Female,"English,German,Persian",Laptop speakers,B.Sc. Computer Science ,True,0.0
+user_4,1,0,True,0,2026-04-26T22:12:19.302Z,21.0,Male,English,Headphones (on-ear),bachelor,True,2.0
+user_5,1,0,True,6533,2026-04-28T22:43:00.945Z,33.0,Female,"English,Hindi",External speakers,Ms clinical psychology ,True,6.0
+user_6,1,0,False,0,2026-05-05T19:39:43.247Z,,,,,,,
+user_7,1,0,True,555,2026-05-04T11:25:28.745Z,40.0,Female,English,Headphones (over-ear),Translation,True,0.0
+user_8,1,0,True,5224,2026-04-28T20:19:25.021Z,33.0,Male,"Spanish,English,Italian,French",Earbuds (wireless/ANC),Clinical psychology ,True,5.0
+user_9,1,0,True,9674,2026-05-03T15:22:01.960Z,29.0,Female,"English,Hindi,Punjabi,Urdu",Headphones (on-ear),BS Psychology ,True,9.0
