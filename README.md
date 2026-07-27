@@ -3,6 +3,32 @@
 Benchmark tooling for two emotion-audio annotation subsets and CLAP-style
 model evaluation against them.
 
+> ### 🎧 Interactive companion pages (for reviewers)
+>
+> **[▶ Open the "Giving a Coding Agent Ears" companion site](docs/agent-ears/index.html)** &nbsp;·&nbsp;
+> [Demo 1 — Understanding (in-the-wild radar profiles)](docs/agent-ears/understanding.html) &nbsp;·&nbsp;
+> [Demo 2 — Guiding generation (designed character voices)](docs/agent-ears/voices.html)
+>
+> These three self-contained HTML pages (a landing page plus two sub-pages, audio embedded inline —
+> just open them in a browser) let you **hear** what this benchmark measures and what it enables.
+>
+> **A note on naming:** the perceptual-dimension subset called **`emolia-dim`** in this repository is
+> the **VoiceNet** taxonomy (the 57 fine-grained voice-performance dimensions); **`emolia-emo`** is the
+> 40-emotion set. The companion pages use the **VoiceNet** name throughout.
+>
+> **What the pages show — beyond contrastive retrieval:**
+> * **Understanding.** Real *in-the-wild* clips from the EmoLia dataset are scored along the VoiceNet
+>   dimensions and drawn as **radar / spider-web profiles**, so you can see (and hear) how the taxonomy
+>   describes natural, uncontrolled speech — not just curated benchmark items.
+> * **Guiding generation.** The same VoiceNet dimensions (as fast predictor heads) are used as a
+>   **fitness signal to steer text-to-speech / voice-acting generation** via evolutionary search over
+>   natural-language voice instructions — designing out-of-distribution voices (ASMR, dragons, goblins,
+>   grieving voices …) **with no reference recordings and no copyrighted training voices**.
+>
+> In other words: the benchmark's dimensions are not only a representation-level yardstick — they are a
+> reusable *perception* signal that can **drive** expressive TTS and copyright-friendly voice design.
+> (The pages are anonymized for double-blind review.)
+
 ## Subsets
 
 * **emolia-emo** — 3-level ordinal rating (`not_present` / `weakly_present` /
