@@ -5,12 +5,14 @@ model evaluation against them.
 
 > ### 🎧 Interactive companion pages (for reviewers)
 >
-> **[▶ Open the "Giving a Coding Agent Ears" companion site](docs/agent-ears/index.html)** &nbsp;·&nbsp;
-> [Demo 1 — Understanding (in-the-wild radar profiles)](docs/agent-ears/understanding.html) &nbsp;·&nbsp;
-> [Demo 2 — Guiding generation (designed character voices)](docs/agent-ears/voices.html)
+> **[▶ Open the "Giving a Coding Agent Ears" companion site](https://projects.laion.ai/emolia-bench/agent-ears/index.html)** &nbsp;·&nbsp;
+> [Demo 1 — Understanding (in-the-wild radar profiles)](https://projects.laion.ai/emolia-bench/agent-ears/understanding.html) &nbsp;·&nbsp;
+> [Demo 2 — Guiding generation (designed character voices)](https://projects.laion.ai/emolia-bench/agent-ears/voices.html)
 >
-> These three self-contained HTML pages (a landing page plus two sub-pages, audio embedded inline —
-> just open them in a browser) let you **hear** what this benchmark measures and what it enables.
+> These three pages are live, rendered HTML (a landing page plus two sub-pages, audio embedded inline).
+> They are also in this repository under [`docs/agent-ears/`](docs/agent-ears/) — served here via GitHub Pages —
+> so they render through the anonymized review mirror as well. They let you **hear** what this benchmark
+> measures and what it enables.
 >
 > **A note on naming:** the perceptual-dimension subset called **`emolia-dim`** in this repository is
 > the **VoiceNet** taxonomy (the 57 fine-grained voice-performance dimensions); **`emolia-emo`** is the
