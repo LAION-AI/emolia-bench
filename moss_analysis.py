@@ -22,8 +22,8 @@ Statistics (real items only unless stated; hidden checks have is_quality_check =
 Confidence intervals are 95% percentile intervals from a bootstrap that resamples items
 (not judgements), because several raters judge the same item.
 
-    python3 src/moss_analysis.py                        # local anonymized CSV
-    python3 src/moss_analysis.py --csv <path-or-URL> --json results.json
+    python3 moss_analysis.py                        # local anonymized CSV
+    python3 moss_analysis.py --csv <path-or-URL> --json results.json
 """
 
 import argparse
@@ -37,8 +37,8 @@ import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_CSV = ROOT / "neurips-2026-rejection" / "uploads" / "anonymized_judgements" / "moss_audit_judgements.csv"
+ROOT = Path(__file__).resolve().parent
+DEFAULT_CSV = ROOT / "annotations" / "moss_audit_judgements.csv"
 
 
 def load(source):
